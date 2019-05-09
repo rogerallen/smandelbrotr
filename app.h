@@ -2,9 +2,8 @@
 #define SMANDELBROTR_APP_H
 
 #include <SFML/Graphics.hpp>
-#include <SFML/OpenGL.hpp>  // TODO remove?
 #include <iostream>
-#include "appwindow.h"
+#include "appWindow.h"
 #include "appGL.h"
 
 class App {

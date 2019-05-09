@@ -94,8 +94,7 @@ void App::loop()
 
         update();
         // mandelbrot.render();
-        // AppGL::render()
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // FIXME
+        mAppGL->render();
 
         /*
         // FIXME do this only when necessary
@@ -113,7 +112,7 @@ void App::loop()
 
 void App::update()
 {
-    // TODO AppGL::handleResize();
+    mAppGL->handleResize();
     // TODO handle fullscreen
     // TODO zoomOutMode
     // TODO mouseDown
@@ -127,5 +126,4 @@ void App::resize(unsigned width, unsigned height)
         mAppWindow->width(width);
         mAppWindow->height(height);
     }
-    // FIXME glViewport(0, 0, width, height);
 }
