@@ -2,9 +2,10 @@
 #define SMANDELBROTR_APP_H
 
 #include <SFML/Graphics.hpp>
-#include <SFML/OpenGL.hpp>
+#include <SFML/OpenGL.hpp>  // TODO remove?
 #include <iostream>
-#include "window.h"
+#include "appwindow.h"
+#include "appGL.h"
 
 class App {
 
@@ -12,11 +13,12 @@ class App {
     void initWindow();
     void loop();
     void update();
-    void resize(unsigned int width, unsigned int height);
+    void resize(unsigned width, unsigned height);
 
-    const unsigned int WINDOW_START_WIDTH = 800, WINDOW_START_HEIGHT = 800;
+    const unsigned WINDOW_START_WIDTH = 800, WINDOW_START_HEIGHT = 800;
 
-    Window *mWindow;
+    AppWindow *mAppWindow;
+    AppGL     *mAppGL;
     sf::RenderWindow *mRenderWindow;
     // TODO Mandelbrot mandelbrot;
     bool mSwitchFullscreen;

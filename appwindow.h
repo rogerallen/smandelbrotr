@@ -1,14 +1,14 @@
-#ifndef SMANDELBROTR_WINDOW_H
-#define SMANDELBROTR_WINDOW_H
+#ifndef SMANDELBROTR_APP_WINDOW_H
+#define SMANDELBROTR_APP_WINDOW_H
 
 #include <iostream>
 
-class Window {
+class AppWindow {
     unsigned int mWidth, mHeight;
     bool mResized;
 
 public:
-    Window(unsigned int width, unsigned int height) :
+    AppWindow(unsigned int width, unsigned int height) :
     mWidth{width}, mHeight{height} {
         mResized = true;
     }

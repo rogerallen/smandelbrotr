@@ -24,10 +24,8 @@ void App::run()
 bool App::init()
 {
     initWindow();
+    mAppGL = new AppGL(mAppWindow, mMonitorWidth, mMonitorHeight);
     /*
-    if(AppGL::init(window, monitorWidth, monitorHeight, false)) {
-        return true;
-    }
     if(AppCUDA::setDevice()) {
         return true;
     }
@@ -38,7 +36,7 @@ bool App::init()
 // initialize SFML window
 void App::initWindow()
 {
-    mWindow = new Window(WINDOW_START_WIDTH, WINDOW_START_HEIGHT);
+    mAppWindow = new AppWindow(WINDOW_START_WIDTH, WINDOW_START_HEIGHT);
 
     sf::ContextSettings settings;
     settings.depthBits         = 0;
@@ -46,7 +44,7 @@ void App::initWindow()
     settings.antialiasingLevel = 1;
     settings.majorVersion      = 3;
     settings.minorVersion      = 3;
-    mRenderWindow = new sf::RenderWindow(sf::VideoMode(mWindow->width(), mWindow->height()),
+    mRenderWindow = new sf::RenderWindow(sf::VideoMode(mAppWindow->width(), mAppWindow->height()),
                                     "SMandelbrotr",
                                     sf::Style::Default,
                                     settings);
@@ -62,6 +60,7 @@ void App::initWindow()
 
 void App::loop()
 {
+    /*
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
     sf::Font font;
@@ -74,10 +73,9 @@ void App::loop()
     text.setCharacterSize(24);
     //text.setFillColor(sf::Color::White);
     text.setColor(sf::Color::Black);
-
+    */
     mRenderWindow->setActive(true);
 
-    glClearColor(1.0,1.0,0.0,0.0);
 
     bool running = true;
     while (running)
@@ -99,12 +97,14 @@ void App::loop()
         // AppGL::render()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // FIXME
 
+        /*
         // FIXME do this only when necessary
         mRenderWindow->pushGLStates();
         //mRenderWindow->clear();
         mRenderWindow->draw(shape);
         mRenderWindow->draw(text);
         mRenderWindow->popGLStates();
+        */
 
         mRenderWindow->display();
     }
@@ -120,12 +120,12 @@ void App::update()
     // TODO saveImage
 }
 
-void App::resize(unsigned int width, unsigned int height)
+void App::resize(unsigned width, unsigned height)
 {
     if( width > 0 && height > 0 &&
-        (mWindow->width() != width || mWindow->height() != height)) {
-        mWindow->width(width);
-        mWindow->height(height);
+        (mAppWindow->width() != width || mAppWindow->height() != height)) {
+        mAppWindow->width(width);
+        mAppWindow->height(height);
     }
     // FIXME glViewport(0, 0, width, height);
 }
