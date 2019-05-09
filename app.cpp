@@ -1,0 +1,131 @@
+#include "app.h"
+
+App::App()
+{
+    mSwitchFullscreen = false;
+    mIsFullscreen = false;
+    mZoomOutMode = false;
+    mSaveImage = false;
+    mMouseDown = false;
+    mMonitorWidth = mMonitorHeight = -1;
+    mPrevWindowWidth = mPrevWindowHeight = -1;
+    mMouseStartX = mMouseStartY = mCenterStartX = mCenterStartY = -1;
+}
+
+void App::run()
+{
+    if(!init()) {
+        loop();
+    }
+}
+
+// initialize SMFL, OpenGL, CUDA & Mandelbrot classes
+// return true on error
+bool App::init()
+{
+    initWindow();
+    /*
+    if(AppGL::init(window, monitorWidth, monitorHeight, false)) {
+        return true;
+    }
+    if(AppCUDA::setDevice()) {
+        return true;
+    }
+    */
+    return false;
+}
+
+// initialize SFML window
+void App::initWindow()
+{
+    mWindow = new Window(WINDOW_START_WIDTH, WINDOW_START_HEIGHT);
+
+    sf::ContextSettings settings;
+    settings.depthBits         = 0;
+    settings.stencilBits       = 0;
+    settings.antialiasingLevel = 1;
+    settings.majorVersion      = 3;
+    settings.minorVersion      = 3;
+    mRenderWindow = new sf::RenderWindow(sf::VideoMode(mWindow->width(), mWindow->height()),
+                                    "SMandelbrotr",
+                                    sf::Style::Default,
+                                    settings);
+    mRenderWindow->setVerticalSyncEnabled(true);
+
+    settings = mRenderWindow->getSettings();
+    std::cout << "depth bits:" << settings.depthBits << std::endl;
+    std::cout << "stencil bits:" << settings.stencilBits << std::endl;
+    std::cout << "antialiasing level:" << settings.antialiasingLevel << std::endl;
+    std::cout << "version:" << settings.majorVersion << "." << settings.minorVersion << std::endl;
+
+}
+
+void App::loop()
+{
+    sf::CircleShape shape(100.f);
+    shape.setFillColor(sf::Color::Green);
+    sf::Font font;
+    if(!font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf")) {
+        std::cerr << "CANNOT FONT" << std::endl;
+    }
+    sf::Text text;
+    text.setFont(font);
+    text.setString("SMFL Mandelbrotr");
+    text.setCharacterSize(24);
+    //text.setFillColor(sf::Color::White);
+    text.setColor(sf::Color::Black);
+
+    mRenderWindow->setActive(true);
+
+    glClearColor(1.0,1.0,0.0,0.0);
+
+    bool running = true;
+    while (running)
+    {
+        sf::Event event;
+        while (mRenderWindow->pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed) {
+                running = false;
+            }
+            else if (event.type == sf::Event::Resized) {
+                resize(event.size.width, event.size.height);
+            }
+
+        }
+
+        update();
+        // mandelbrot.render();
+        // AppGL::render()
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // FIXME
+
+        // FIXME do this only when necessary
+        mRenderWindow->pushGLStates();
+        //mRenderWindow->clear();
+        mRenderWindow->draw(shape);
+        mRenderWindow->draw(text);
+        mRenderWindow->popGLStates();
+
+        mRenderWindow->display();
+    }
+
+}
+
+void App::update()
+{
+    // TODO AppGL::handleResize();
+    // TODO handle fullscreen
+    // TODO zoomOutMode
+    // TODO mouseDown
+    // TODO saveImage
+}
+
+void App::resize(unsigned int width, unsigned int height)
+{
+    if( width > 0 && height > 0 &&
+        (mWindow->width() != width || mWindow->height() != height)) {
+        mWindow->width(width);
+        mWindow->height(height);
+    }
+    // FIXME glViewport(0, 0, width, height);
+}

@@ -1,6 +1,6 @@
 #include <SFML/Config.hpp>
 #include <iostream>
-#include "window.h"
+#include "app.h"
 
 int main()
 {
@@ -10,8 +10,7 @@ int main()
         SFML_VERSION_MINOR << "." <<
         SFML_VERSION_PATCH << std::endl;
 
-    Window window;
-    window.run();
-
+    App app;
+    app.run();
     return 0;
 }

@@ -1,19 +1,22 @@
 #ifndef SMANDELBROTR_WINDOW_H
 #define SMANDELBROTR_WINDOW_H
 
-#include <SFML/Graphics.hpp>
-#include <SFML/OpenGL.hpp>
 #include <iostream>
 
 class Window {
+    unsigned int mWidth, mHeight;
+    bool mResized;
+
 public:
-    void run();
-
-private:
-    void init();
-    void loop();
-    void resize(int width, int height);
-
-    sf::RenderWindow *m_window;
+    Window(unsigned int width, unsigned int height) :
+    mWidth{width}, mHeight{height} {
+        mResized = true;
+    }
+    void width(unsigned int width) { mWidth = width; mResized = true;}
+    unsigned int width() { return mWidth; }
+    void height(unsigned int height) { mHeight = height; mResized = true;}
+    unsigned int height() { return mHeight; }
+    bool resized() { return mResized; }
+    void resizeHandled() { mResized = false; }
 };
 #endif
