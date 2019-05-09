@@ -1,7 +1,9 @@
 #ifndef SMANDELBROTR_APP_H
 #define SMANDELBROTR_APP_H
 
+#include <GL/glew.h>
 #include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
 #include <iostream>
 #include "appWindow.h"
 #include "appGL.h"

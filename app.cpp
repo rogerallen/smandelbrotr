@@ -7,7 +7,8 @@ App::App()
     mZoomOutMode = false;
     mSaveImage = false;
     mMouseDown = false;
-    mMonitorWidth = mMonitorHeight = -1;
+    mMonitorWidth = sf::VideoMode::getDesktopMode().width;
+    mMonitorHeight = sf::VideoMode::getDesktopMode().height;
     mPrevWindowWidth = mPrevWindowHeight = -1;
     mMouseStartX = mMouseStartY = mCenterStartX = mCenterStartY = -1;
 }
@@ -56,6 +57,9 @@ void App::initWindow()
     std::cout << "antialiasing level:" << settings.antialiasingLevel << std::endl;
     std::cout << "version:" << settings.majorVersion << "." << settings.minorVersion << std::endl;
 
+    mRenderWindow->setActive(true);
+    glewInit();
+
 }
 
 void App::loop()
@@ -74,7 +78,6 @@ void App::loop()
     //text.setFillColor(sf::Color::White);
     text.setColor(sf::Color::Black);
     */
-    mRenderWindow->setActive(true);
 
 
     bool running = true;

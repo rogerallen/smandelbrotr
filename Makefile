@@ -1,9 +1,9 @@
 # inspired by https://stackoverflow.com/questions/2481269/how-to-make-a-simple-c-makefile/2481326
 # that led to http://make.mad-scientist.net/papers/advanced-auto-dependency-generation/#combine
 CXX=g++
-CXXFLAGS=-std=c++11 -Werror -Wall
+CXXFLAGS=-g -std=c++11 -Werror -Wall -Iglm
 LDFLAGS=
-LDLIBS=-lsfml-graphics -lsfml-window -lsfml-system -lGL
+LDLIBS=-lsfml-graphics -lsfml-window -lsfml-system -lGL -lGLEW
 
 SRCS=main.cpp app.cpp
 
