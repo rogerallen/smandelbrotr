@@ -1,24 +1,30 @@
 #ifndef SMANDELBROTR_APP_GL_H
 #define SMANDELBROTR_APP_GL_H
 
+#include "appPbo.h"
+#include "appTexture.h"
+#include "appGLProgram.h"
 #include <SFML/OpenGL.hpp>
 #include "glm/glm.hpp"
 #include "glm/ext.hpp"
-#include "appPbo.h"
 
 class AppGL {
     AppWindow *mWindow;
-    //AppVerts verts;
-    //AppProgram basicProg;
-    //AppTexture sharedTex;
-    AppPbo *sharedPbo;
+    //AppVerts mVerts;
+    AppGLProgram *mBasicProg;
+    AppTexture *mSharedTex;
+    AppPbo *mSharedPbo;
     glm::mat4 mCameraToView;
 public:
     AppGL(AppWindow *appWindow, unsigned maxWidth, unsigned maxHeight) {
         mWindow = appWindow;
-        glClearColor(1.0,1.0,0.0,0.0); // FIXME
+        glClearColor(1.0,1.0,0.5,0.0);
         // Shared CUDA/GL pixel buffer
-        sharedPbo = new AppPbo(maxWidth, maxHeight);
+        mSharedPbo = new AppPbo(maxWidth, maxHeight);
+        mSharedTex = new AppTexture(maxWidth, maxHeight);
+        mBasicProg = new AppGLProgram("basic_vert.glsl", "basic_frag.glsl");
+        //float[] coords = {0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f};
+        //mVerts = new AppVerts()
         // FIXME rest of state
     }
     void handleResize() {
