@@ -1,9 +1,14 @@
 # inspired by https://stackoverflow.com/questions/2481269/how-to-make-a-simple-c-makefile/2481326
 # that led to http://make.mad-scientist.net/papers/advanced-auto-dependency-generation/#combine
+CUDA_DIR = /usr/local/cuda
+# adjust for your GPU
+CUDA_GENCODE = arch=compute_60,code=sm_60
+CUDA_SRCS =
+
 CXX=g++
-CXXFLAGS=-g -std=c++11 -Werror -Wall -Iglm
-LDFLAGS=
-LDLIBS=-lsfml-graphics -lsfml-window -lsfml-system -lGL -lGLEW
+CXXFLAGS=-g -std=c++11 -Werror -Wall -Iglm -I$(CUDA_DIR)/include
+LDFLAGS=-L $(CUDA_DIR)/lib64
+LDLIBS=-lsfml-graphics -lsfml-window -lsfml-system -lGL -lGLEW -lcudart -lcuda
 
 SRCS=main.cpp app.cpp
 
