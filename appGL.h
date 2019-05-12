@@ -11,12 +11,13 @@
 #include "glm/ext.hpp"
 
 class AppGL {
-    AppWindow    *mWindow;
-    AppVerts     *mVerts;
-    AppGLProgram *mBasicProg;
-    AppTexture   *mSharedTex;
-    AppPbo       *mSharedPbo;
-    glm::mat4    mCameraToView;
+    AppWindow     *mWindow;
+    AppVerts      *mVerts;
+    AppGLProgram  *mBasicProg;
+    AppTexture    *mSharedTex;
+    AppPbo        *mSharedPbo;
+    glm::mat4      mCameraToView;
+    unsigned char *mPixels;  // storage for data from framebuffer
 public:
     // OpenGL-related code for JMandelbrot.  This is a static class to
     // reflect a single GL context.
@@ -59,6 +60,11 @@ public:
                               mBasicProg->attrPosition(), coords,
                               mBasicProg->attrTexCoords(), coords);
     }
+    AppPbo* sharedPbo() {
+        return mSharedPbo;
+    }
+    unsigned textureWidth() { return mSharedTex->width(); }
+    unsigned textureHeight() { return mSharedTex->height(); }
     void handleResize() {
         glViewport(0, 0, mWindow->width(), mWindow->height());
         if(mWindow->resized()) {
@@ -74,10 +80,21 @@ public:
             mCameraToView = glm::ortho(0.0f, xpos, ypos, 0.0f);
             // FIXME more to do
         }
+        /* FIXME
+          // resize rgb array for saving pixels
+          if(m_pixels != nullptr) {
+              delete[](m_pixels);
+          }
+          m_pixels = new unsigned char[m_window_width * m_window_height * 4];
+          printf("m_pixels size = %d\n",m_window_width * m_window_height * 4);
+        */
     }
     void render() {
         glClear(GL_COLOR_BUFFER_BIT);
         // FIXME everything else
+    }
+    void readPixels() { // ??? get access to pixels some other way?
+        glReadPixels(0, 0, mWindow->width(), mWindow->height(), GL_RGBA, GL_UNSIGNED_BYTE, mPixels);
     }
 };
 
