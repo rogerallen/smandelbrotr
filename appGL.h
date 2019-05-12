@@ -91,7 +91,20 @@ public:
     }
     void render() {
         glClear(GL_COLOR_BUFFER_BIT);
-        // FIXME everything else
+        // copy the CUDA-updated pixel buffer to the texture.
+        mSharedPbo->bind();
+        mSharedTex->bind();
+        //FIXME mSharedTex->copyFromPbo();
+
+        mBasicProg->bind();
+        mBasicProg->updateCameraToView(mCameraToView);
+        mVerts->bind();
+        mVerts->draw();
+
+        mVerts->unbind();
+        mSharedPbo->unbind();
+        mSharedTex->unbind();
+        mBasicProg->unbind();
     }
     void readPixels() { // ??? get access to pixels some other way?
         glReadPixels(0, 0, mWindow->width(), mWindow->height(), GL_RGBA, GL_UNSIGNED_BYTE, mPixels);
