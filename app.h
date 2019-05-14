@@ -8,6 +8,7 @@
 #include "appWindow.h"
 #include "appGL.h"
 #include "appCUDA.h"
+#include "appMandelbrot.h"
 
 class App {
 
@@ -19,10 +20,10 @@ class App {
 
     const unsigned WINDOW_START_WIDTH = 800, WINDOW_START_HEIGHT = 800;
 
-    AppWindow *mAppWindow;
-    AppGL     *mAppGL;
+    AppWindow        *mAppWindow;
+    AppGL            *mAppGL;
+    AppMandelbrot    *mAppMandelbrot;
     sf::RenderWindow *mRenderWindow;
-    // TODO Mandelbrot mandelbrot;
     bool mSwitchFullscreen;
     bool mIsFullscreen;
     int mMonitorWidth, mMonitorHeight;

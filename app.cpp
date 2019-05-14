@@ -29,6 +29,7 @@ bool App::init()
     if(AppCUDA::setDevice()) {
         return true;
     }
+    mAppMandelbrot = new AppMandelbrot(mAppWindow, mAppGL);
     return false;
 }
 
