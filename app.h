@@ -32,6 +32,7 @@ class App {
     bool              mSaveImage;
     bool              mMouseDown;
     double            mMouseStartX, mMouseStartY;
+    double            mMouseX, mMouseY;
     double            mCenterStartX, mCenterStartY;
 
 public:

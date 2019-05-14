@@ -10,7 +10,7 @@ App::App()
     mMonitorWidth = sf::VideoMode::getDesktopMode().width;
     mMonitorHeight = sf::VideoMode::getDesktopMode().height;
     mPrevWindowWidth = mPrevWindowHeight = -1;
-    mMouseStartX = mMouseStartY = mCenterStartX = mCenterStartY = -1;
+    mMouseStartX = mMouseStartY = mMouseX = mMouseY = mCenterStartX = mCenterStartY = -1;
 }
 
 void App::run()
@@ -84,15 +84,45 @@ void App::loop()
     while (running)
     {
         sf::Event event;
-        while (mRenderWindow->pollEvent(event))
-        {
+        while (mRenderWindow->pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 running = false;
             }
             else if (event.type == sf::Event::Resized) {
                 resize(event.size.width, event.size.height);
             }
-
+            else if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code == sf::Keyboard::Escape) {
+                    running = false;
+                }
+            }
+            else if (event.type == sf::Event::MouseButtonPressed) {
+                if (event.mouseButton.button == sf::Mouse::Left) {
+                    mMouseStartX = mMouseX = event.mouseButton.x;
+                    mMouseStartY = mMouseY = event.mouseButton.y;
+                    mCenterStartX = mAppMandelbrot->centerX();
+                    mCenterStartY = mAppMandelbrot->centerY();
+                    mMouseDown = true;
+                }
+            }
+            else if (event.type == sf::Event::MouseMoved) {
+                mMouseX = event.mouseMove.x;
+                mMouseY = event.mouseMove.y;
+            }
+            else if (event.type == sf::Event::MouseButtonReleased) {
+                if (event.mouseButton.button == sf::Mouse::Left) {
+                    mMouseDown = false;
+                }
+            }
+            else if (event.type == sf::Event::MouseWheelScrolled) {
+                const double zoomFactor = 1.1;
+                if(event.mouseWheelScroll.delta > 0) {
+                    mAppMandelbrot->zoomMul(zoomFactor);
+                }
+                else {
+                    mAppMandelbrot->zoomDiv(zoomFactor);
+                }
+            }
         }
 
         update();
@@ -118,7 +148,25 @@ void App::update()
     mAppGL->handleResize();
     // TODO handle fullscreen
     // TODO zoomOutMode
-    // TODO mouseDown
+    if(mMouseDown) {
+        double dx = mMouseX - mMouseStartX;
+        double dy = mMouseY - mMouseStartY;
+//#ifdef DEBUG
+//        std::cerr << "dx,dy = " << dx << ", " << dy << std::endl;
+//#endif
+        double pixelsPerMandelSpace;
+        if(mAppWindow->width() > mAppWindow->height()) {
+            pixelsPerMandelSpace = mAppWindow->width() * mAppMandelbrot->zoom();
+        }
+        else {
+            pixelsPerMandelSpace = mAppWindow->height() * mAppMandelbrot->zoom();
+        }
+        double mandelSpacePerPixel = 2.0 / pixelsPerMandelSpace;
+        double centerDx = dx * mandelSpacePerPixel;
+        double centerDy = dy * mandelSpacePerPixel;
+        mAppMandelbrot->centerX(mCenterStartX - centerDx);
+        mAppMandelbrot->centerY(mCenterStartY - centerDy);
+    }
     // TODO saveImage
 }
 

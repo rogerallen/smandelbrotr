@@ -38,9 +38,19 @@ public:
     }
     void doublePrecision(bool b) { mDoublePrecision = b; }
     void iterMult(int i) { mIterMult = i; }
-    void centerX(double d) { mCenterX = d; }
+    void centerX(double d) {
+//#ifdef DEBUG
+//        std::cerr << "centerX = " << d;
+//#endif
+        mCenterX = d;
+    }
     double centerX() { return mCenterX; }
-    void centerY(double d) { mCenterY = d; }
+    void centerY(double d) {
+//#ifdef DEBUG
+//        std::cerr << " centerY = " << d  << std::endl;
+//#endif
+        mCenterY = d;
+    }
     double centerY() { return mCenterY; }
     double zoom() { return mZoom; }
     void zoomMul(double d) { mZoom *= d; }
