@@ -5,6 +5,8 @@
 #include <cuda_runtime_api.h>
 #include <cuda_gl_interop.h>
 
+#include <SFML/OpenGL.hpp>
+
 class AppPbo {
     GLuint mId;
     cudaGraphicsResource *mCudaPboHandle; // handle? or pointer?  FIXME

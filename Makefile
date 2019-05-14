@@ -12,7 +12,7 @@ LDFLAGS=-L $(CUDA_DIR)/lib64
 LDLIBS=-lsfml-graphics -lsfml-window -lsfml-system -lGL -lGLEW -lcudart -lcuda
 
 CUDA_SRCS=mandelbrot.cu
-SRCS=main.cpp app.cpp appCUDA.cpp
+SRCS=main.cpp app.cpp appCUDA.cpp appGL.cpp
 
 OBJS=$(subst .cpp,.o,$(SRCS)) $(subst .cu,.o,$(CUDA_SRCS))
 

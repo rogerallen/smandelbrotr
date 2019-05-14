@@ -6,6 +6,7 @@
 #include "glm/ext.hpp"
 #include <fstream>
 #include <string>
+#include <vector>
 
 class AppGLProgram {
     GLuint mId;

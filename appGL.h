@@ -10,6 +10,15 @@
 #include "glm/glm.hpp"
 #include "glm/ext.hpp"
 
+void GLAPIENTRY
+MessageCallback( GLenum source,
+                 GLenum type,
+                 GLuint id,
+                 GLenum severity,
+                 GLsizei length,
+                 const GLchar* message,
+                 const void* userParam );
+
 class AppGL {
     AppWindow     *mWindow;
     AppVerts      *mVerts;
@@ -52,13 +61,18 @@ public:
         mSharedPbo = new AppPbo(maxWidth, maxHeight);
         mSharedTex = new AppTexture(maxWidth, maxHeight);
         mBasicProg = new AppGLProgram("basic_vert.glsl", "basic_frag.glsl");
-        float coords[] = {0.0f, 1.0f, // 8 attrs, 4 verts
-                           1.0f, 1.0f,
+        std::cout << "90% vert coverage (FIXME)" << std::endl;
+        float coords[] = {0.0f, 0.9f, // 8 attrs, 4 verts FIXME
+                           0.9f, 0.9f,
                            0.0f, 0.0f,
-                           1.0f, 0.0f};
+                           0.9f, 0.0f};
         mVerts = new AppVerts(8, 4,
                               mBasicProg->attrPosition(), coords,
                               mBasicProg->attrTexCoords(), coords);
+        // During init, enable debug output
+        glEnable( GL_DEBUG_OUTPUT );
+        glDebugMessageCallback( MessageCallback, 0 );
+
     }
     AppPbo* sharedPbo() {
         return mSharedPbo;
@@ -78,7 +92,17 @@ public:
                 xpos = (float) mWindow->width() / (float) mWindow->height();
             }
             mCameraToView = glm::ortho(0.0f, xpos, ypos, 0.0f);
-            // FIXME more to do
+
+            // update on-screen triangles to reflect the aspect ratio change.
+            ypos *= 0.9f; // FIXME
+            xpos *= 0.9f;
+            float newPos[] = { 0.0f, ypos, xpos, ypos, 0.0f, 0.0f, xpos, 0.0f };
+            mVerts->updatePosition(newPos);
+
+            float wratio = (float) mWindow->width() / mSharedTex->width();
+            float hratio = (float) mWindow->height() / mSharedTex->height();
+            float newCoords[] = { 0.0f, hratio, wratio, hratio, 0.0f, 0.0f, wratio, 0.0f };
+            mVerts->updateTexCoords(newCoords);
         }
         /* FIXME
           // resize rgb array for saving pixels
