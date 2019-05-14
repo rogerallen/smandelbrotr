@@ -26,11 +26,9 @@ bool App::init()
 {
     initWindow();
     mAppGL = new AppGL(mAppWindow, mMonitorWidth, mMonitorHeight);
-    /*
     if(AppCUDA::setDevice()) {
         return true;
     }
-    */
     return false;
 }
 

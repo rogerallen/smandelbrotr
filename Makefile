@@ -10,7 +10,7 @@ CXXFLAGS=-g -std=c++11 -Werror -Wall -Iglm -I$(CUDA_DIR)/include
 LDFLAGS=-L $(CUDA_DIR)/lib64
 LDLIBS=-lsfml-graphics -lsfml-window -lsfml-system -lGL -lGLEW -lcudart -lcuda
 
-SRCS=main.cpp app.cpp
+SRCS=main.cpp app.cpp appCUDA.cpp
 
 OBJS=$(subst .cpp,.o,$(SRCS))
 

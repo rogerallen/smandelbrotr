@@ -7,6 +7,7 @@
 #include <iostream>
 #include "appWindow.h"
 #include "appGL.h"
+#include "appCUDA.h"
 
 class App {
 
