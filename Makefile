@@ -1,18 +1,20 @@
 # inspired by https://stackoverflow.com/questions/2481269/how-to-make-a-simple-c-makefile/2481326
 # that led to http://make.mad-scientist.net/papers/advanced-auto-dependency-generation/#combine
-CUDA_DIR = /usr/local/cuda
+CUDA_DIR=/usr/local/cuda
 # adjust for your GPU
-CUDA_GENCODE = arch=compute_60,code=sm_60
-CUDA_SRCS =
+CUDA_GENCODE=-gencode arch=compute_60,code=sm_60
+NVCC=$(CUDA_DIR)/bin/nvcc
+NVCC_FLAGS=-I$(CUDA_DIR)/include $(CUDA_GENCODE)
 
 CXX=g++
 CXXFLAGS=-g -std=c++11 -Werror -Wall -Iglm -I$(CUDA_DIR)/include
 LDFLAGS=-L $(CUDA_DIR)/lib64
 LDLIBS=-lsfml-graphics -lsfml-window -lsfml-system -lGL -lGLEW -lcudart -lcuda
 
+CUDA_SRCS=mandelbrot.cu
 SRCS=main.cpp app.cpp appCUDA.cpp
 
-OBJS=$(subst .cpp,.o,$(SRCS))
+OBJS=$(subst .cpp,.o,$(SRCS)) $(subst .cu,.o,$(CUDA_SRCS))
 
 DEPDIR := .depend
 $(shell mkdir -p $(DEPDIR) >/dev/null)
@@ -33,6 +35,9 @@ clean:
 %.o : %.cpp $(DEPDIR)/%.d
 	$(CXX) $(DEPFLAGS) $(CXXFLAGS) -c $<
 	$(POSTCOMPILE)
+
+%.o : %.cu
+	$(NVCC) $(NVCC_FLAGS) -c $<
 
 $(DEPDIR)/%.d: ;
 .PRECIOUS: $(DEPDIR)/%.d

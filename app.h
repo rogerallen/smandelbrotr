@@ -24,14 +24,15 @@ class App {
     AppGL            *mAppGL;
     AppMandelbrot    *mAppMandelbrot;
     sf::RenderWindow *mRenderWindow;
-    bool mSwitchFullscreen;
-    bool mIsFullscreen;
-    int mMonitorWidth, mMonitorHeight;
-    int mPrevWindowWidth, mPrevWindowHeight;
-    bool mZoomOutMode;
-    bool mSaveImage;
-    bool mMouseDown;
-    double mMouseStartX, mMouseStartY, mCenterStartX, mCenterStartY;
+    bool              mSwitchFullscreen;
+    bool              mIsFullscreen;
+    int               mMonitorWidth, mMonitorHeight;
+    int               mPrevWindowWidth, mPrevWindowHeight;
+    bool              mZoomOutMode;
+    bool              mSaveImage;
+    bool              mMouseDown;
+    double            mMouseStartX, mMouseStartY;
+    double            mCenterStartX, mCenterStartY;
 
 public:
     App();

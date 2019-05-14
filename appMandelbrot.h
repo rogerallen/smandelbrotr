@@ -1,10 +1,7 @@
 #ifndef SMANDELBROTR_APP_MANDELBROT_H
 #define SMANDELBROTR_APP_MANDELBROT_H
 
-#include "cudaErrorCheck.h"
-#include <cuda_runtime_api.h>
-#include <cuda_gl_interop.h>
-#include <cuda.h>
+#include "mandelbrot.h"
 
 class AppMandelbrot {
     const static bool USE_REAL_TIME_COMPILE = false;
@@ -15,17 +12,6 @@ class AppMandelbrot {
     double    mCenterX, mCenterY, mZoom;
     int       mIterMult;
     bool      mDoublePrecision;
-    void mandelbrot(void *devPtr, unsigned winWidth, unsigned winHeight, unsigned texWidth, unsigned texHeight) {
-        //const int blockSize = 16; // 256 threads per block
-        if(mDoublePrecision) {
-            //FIXMEmandel_double <<< dim3(texWidth / blockSize, texHeight / blockSize), dim3(blockSize, blockSize)>>>((uchar4 *) devPtr, winWidth, winHeight, texWidth, texHeight, mCenterX, mCenterY, mZoom, mIterMult);
-        }
-        else {
-            //FIXMEmandel_float<<<dim3(texWidth / blockSize, texHeight / blockSize), dim3(blockSize, blockSize)>>>((uchar4 *) devPtr, winWidth, winHeight, texWidth, texHeight, (float)mCenterX, (float)mCenterY, (float)mZoom, mIterMult);
-        }
-        cudaErrChk(cudaGetLastError());
-        cuErrChk(cuCtxSynchronize());
-    }
 public:
     AppMandelbrot(AppWindow *window, /*AppPbo *sharedPbo,*/ AppGL *appGL) : mWindow(window),
                                                                         //mSharedPbo(sharedPbo),
@@ -43,7 +29,7 @@ public:
     void render() {
         // Do some CUDA that writes to the pbo
         void *devPtr = mAppGL->sharedPbo()->mapGraphicsResource();
-        mandelbrot(devPtr, mWindow->width(), mWindow->height(), mAppGL->textureWidth(), mAppGL->textureHeight());
+        mandelbrot(devPtr, mWindow->width(), mWindow->height(), mAppGL->textureWidth(), mAppGL->textureHeight(), mCenterX, mCenterY, mZoom, mIterMult, mDoublePrecision);
         mAppGL->sharedPbo()->unmapGraphicsResource();
     }
     void doublePrecision(bool b) { mDoublePrecision = b; }

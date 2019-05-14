@@ -6,6 +6,8 @@
 #include <cuda_runtime_api.h>
 #include <cuda.h>
 
+#include <stdio.h>
+
 #define cudaErrChk(ans) { cudaAssert((ans), __FILE__, __LINE__); }
 inline void cudaAssert(cudaError_t code, const char *file, int line, bool abort=true)
 {
