@@ -62,7 +62,7 @@ public:
         mSharedPbo = new AppPbo(maxWidth, maxHeight);
         mSharedTex = new AppTexture(maxWidth, maxHeight);
         mBasicProg = new AppGLProgram("basic_vert.glsl", "basic_frag.glsl");
-        float coords[] = {0.0f, 1.0f, // 8 attrs, 4 verts FIXME
+        float coords[] = {0.0f, 1.0f, // 8 attrs, 4 verts
                            1.0f, 1.0f,
                            0.0f, 0.0f,
                            1.0f, 0.0f};

@@ -9,12 +9,12 @@
 
 class AppPbo {
     GLuint mId;
-    cudaGraphicsResource *mCudaPboHandle; // handle? or pointer?  FIXME
+    cudaGraphicsResource *mCudaPbo;
 public:
     AppPbo(unsigned width, unsigned height) {
-        mCudaPboHandle = nullptr;
+        mCudaPbo = nullptr;
         glGenBuffers(1, &mId);
-        // Make this the current UNPACK buffer aka PBO (Pixel Buffer
+        // Make mId the current UNPACK buffer aka PBO (Pixel Buffer
         // Object)
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, mId);
         // Allocate data for the buffer. DYNAMIC (modified repeatedly)
@@ -23,22 +23,29 @@ public:
 
     };
 
+    // registers & set mCudaPbo as the same as mId PBO.
     void registerBuffer() {
-        cudaErrChk(cudaGraphicsGLRegisterBuffer(&mCudaPboHandle, mId, cudaGraphicsRegisterFlagsNone));
+        // WriteDiscard flag = CUDA will not read this buffer--only
+        // write the entire contents
+        cudaErrChk(cudaGraphicsGLRegisterBuffer(&mCudaPbo,
+                                                mId,
+                                                cudaGraphicsRegisterFlagsWriteDiscard));
     }
 
+    // get a device pointer for cuda to access mCudaPbo
     void *mapGraphicsResource()
     {
-        cudaErrChk(cudaGraphicsMapResources(1, &mCudaPboHandle));
+        cudaErrChk(cudaGraphicsMapResources(1, &mCudaPbo));
         void *devPtr = nullptr;
         size_t size;
-        cudaErrChk(cudaGraphicsResourceGetMappedPointer(&devPtr, &size, mCudaPboHandle));
+        cudaErrChk(cudaGraphicsResourceGetMappedPointer(&devPtr, &size, mCudaPbo));
         return devPtr;
     }
 
+    // stop access to mCudaPbo
     void unmapGraphicsResource()
     {
-        cudaErrChk(cudaGraphicsUnmapResources(1, &mCudaPboHandle));
+        cudaErrChk(cudaGraphicsUnmapResources(1, &mCudaPbo));
     }
 
     // bind the PBO for OpenGL's use.

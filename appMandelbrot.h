@@ -27,9 +27,13 @@ public:
         // FIXME real-time compile stuff here
     }
     void render() {
-        // Do some CUDA that writes to the pbo
+        // Run CUDA kernel to write to the PBO
         void *devPtr = mAppGL->sharedPbo()->mapGraphicsResource();
-        mandelbrot(devPtr, mWindow->width(), mWindow->height(), mAppGL->textureWidth(), mAppGL->textureHeight(), mCenterX, mCenterY, mZoom, mIterMult, mDoublePrecision);
+        mandelbrot(devPtr,
+                   mWindow->width(), mWindow->height(),
+                   mAppGL->textureWidth(), mAppGL->textureHeight(),
+                   mCenterX, mCenterY,
+                   mZoom, mIterMult, mDoublePrecision);
         mAppGL->sharedPbo()->unmapGraphicsResource();
     }
     void doublePrecision(bool b) { mDoublePrecision = b; }
