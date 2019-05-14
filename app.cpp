@@ -30,6 +30,7 @@ bool App::init()
         return true;
     }
     mAppMandelbrot = new AppMandelbrot(mAppWindow, mAppGL);
+    mAppMandelbrot->init();
     return false;
 }
 
@@ -95,7 +96,7 @@ void App::loop()
         }
 
         update();
-        // mandelbrot.render();
+        mAppMandelbrot->render();
         mAppGL->render();
 
         /*

@@ -13,7 +13,7 @@ inline void cudaAssert(cudaError_t code, const char *file, int line, bool abort=
 {
     if (code != cudaSuccess)
     {
-        fprintf(stderr,"CUDA assert: %s %s %d\n", cudaGetErrorString(code), file, line);
+        fprintf(stderr,"CUDA assert: %s %s:%d\n", cudaGetErrorString(code), file, line);
         if (abort) exit(code);
     }
 }
@@ -24,7 +24,7 @@ inline void cuAssert(CUresult code, const char *file, int line, bool abort=true)
     {
         const char *errStr;
         cuGetErrorString(code, &errStr);
-        fprintf(stderr,"CU assert: %s %s %d\n", errStr, file, line);
+        fprintf(stderr,"CU assert: %s %s:%d\n", errStr, file, line);
         if (abort) exit(code);
     }
 }
