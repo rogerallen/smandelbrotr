@@ -2,7 +2,7 @@
 # that led to http://make.mad-scientist.net/papers/advanced-auto-dependency-generation/#combine
 
 # use 'make DEBUG=1' for debug build
-DEBUG ?= 1
+DEBUG ?= 0
 ifeq ($(DEBUG), 1)
     OPT_FLAGS =-g -DDEBUG
 else
