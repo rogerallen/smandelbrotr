@@ -3,7 +3,7 @@
 
 # use 'make DEBUG=1' for debug build
 DEBUG ?= 1
-ifeq (DEBUG, 1)
+ifeq ($(DEBUG), 1)
     OPT_FLAGS =-g -DDEBUG
 else
     OPT_FLAGS =-O3 -DNDEBUG
