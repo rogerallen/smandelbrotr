@@ -55,17 +55,17 @@ public:
     //     0     1 s texture coords
     //
     AppGL(AppWindow *appWindow, unsigned maxWidth, unsigned maxHeight) {
+        std::cout << "maxWidth,height = " << maxWidth << "," << maxHeight << std::endl;
         mWindow = appWindow;
         glClearColor(1.0,1.0,0.5,0.0);
         // Shared CUDA/GL pixel buffer
         mSharedPbo = new AppPbo(maxWidth, maxHeight);
         mSharedTex = new AppTexture(maxWidth, maxHeight);
         mBasicProg = new AppGLProgram("basic_vert.glsl", "basic_frag.glsl");
-        std::cout << "90% vert coverage (FIXME)" << std::endl;
-        float coords[] = {0.0f, 0.9f, // 8 attrs, 4 verts FIXME
-                           0.9f, 0.9f,
+        float coords[] = {0.0f, 1.0f, // 8 attrs, 4 verts FIXME
+                           1.0f, 1.0f,
                            0.0f, 0.0f,
-                           0.9f, 0.0f};
+                           1.0f, 0.0f};
         mVerts = new AppVerts(8, 4,
                               mBasicProg->attrPosition(), coords,
                               mBasicProg->attrTexCoords(), coords);
@@ -94,8 +94,6 @@ public:
             mCameraToView = glm::ortho(0.0f, xpos, ypos, 0.0f);
 
             // update on-screen triangles to reflect the aspect ratio change.
-            ypos *= 0.9f; // FIXME
-            xpos *= 0.9f;
             float newPos[] = { 0.0f, ypos, xpos, ypos, 0.0f, 0.0f, xpos, 0.0f };
             mVerts->updatePosition(newPos);
 
@@ -118,7 +116,7 @@ public:
         // copy the CUDA-updated pixel buffer to the texture.
         mSharedPbo->bind();
         mSharedTex->bind();
-        //FIXME mSharedTex->copyFromPbo();
+        mSharedTex->copyFromPbo();
 
         mBasicProg->bind();
         mBasicProg->updateCameraToView(mCameraToView);
