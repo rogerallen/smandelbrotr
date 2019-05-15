@@ -158,11 +158,13 @@ void mandelbrot(void *devPtr,
                 double centerX, double centerY,
                 double zoom, int iterMult, bool doublePrecision) {
     const int blockSize = 16; // 256 threads per block
+    unsigned mandelWidth = min(winWidth, texWidth);
+    unsigned mandelHeight = min(winHeight, texHeight);
     if(doublePrecision) {
         mandel_double<<<dim3(texWidth / blockSize, texHeight / blockSize),
           dim3(blockSize, blockSize)>>>((uchar4 *) devPtr,
                                         winWidth, winHeight,
-                                        texWidth, texHeight,
+                                        mandelWidth, mandelHeight,
                                         centerX, centerY,
                                         zoom, iterMult);
     }
@@ -170,7 +172,7 @@ void mandelbrot(void *devPtr,
         mandel_float<<<dim3(texWidth / blockSize, texHeight / blockSize),
           dim3(blockSize, blockSize)>>>((uchar4 *) devPtr,
                                         winWidth, winHeight,
-                                        texWidth, texHeight,
+                                        mandelWidth, mandelHeight,
                                         (float)centerX, (float)centerY,
                                         (float)zoom, iterMult);
     }
