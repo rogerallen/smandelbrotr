@@ -10,7 +10,8 @@
 #include "appCUDA.h"
 #include "appMandelbrot.h"
 
-class App {
+class App
+{
 
     bool init();
     void initWindow();
@@ -20,24 +21,23 @@ class App {
 
     const unsigned WINDOW_START_WIDTH = 800, WINDOW_START_HEIGHT = 800;
 
-    AppWindow        *mAppWindow;
-    AppGL            *mAppGL;
-    AppMandelbrot    *mAppMandelbrot;
+    AppWindow *mAppWindow;
+    AppGL *mAppGL;
+    AppMandelbrot *mAppMandelbrot;
     sf::RenderWindow *mRenderWindow;
-    bool              mSwitchFullscreen;
-    bool              mIsFullscreen;
-    int               mMonitorWidth, mMonitorHeight;
-    int               mPrevWindowWidth, mPrevWindowHeight;
-    bool              mZoomOutMode;
-    bool              mSaveImage;
-    bool              mMouseDown;
-    double            mMouseStartX, mMouseStartY;
-    double            mMouseX, mMouseY;
-    double            mCenterStartX, mCenterStartY;
+    bool mSwitchFullscreen;
+    bool mIsFullscreen;
+    int mMonitorWidth, mMonitorHeight;
+    int mPrevWindowWidth, mPrevWindowHeight;
+    bool mZoomOutMode;
+    bool mSaveImage;
+    bool mMouseDown;
+    double mMouseStartX, mMouseStartY;
+    double mMouseX, mMouseY;
+    double mCenterStartX, mCenterStartY;
 
 public:
     App();
     void run();
-
 };
 #endif
