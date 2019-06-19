@@ -7,17 +7,34 @@ App::App()
     mZoomOutMode      = false;
     mSaveImage        = false;
     mMouseDown        = false;
+
     mPrevWindowWidth  = mPrevWindowHeight = -1;
 
-    mMonitorWidth     = -1;//FIXMEsf::VideoMode::getDesktopMode().width;
-    mMonitorHeight    = -1;//FIXMEsf::VideoMode::getDesktopMode().height;
+    mMonitorWidth     = -1;
+    mMonitorHeight    = -1;
 
-    mMouseStartX = mMouseStartY = mMouseX = mMouseY = mCenterStartX = mCenterStartY = -1;
+    mMouseStartX = mMouseStartY =
+        mMouseX = mMouseY = mCenterStartX = mCenterStartY = -1;
 
 }
 
 void App::run()
 {
+    std::cout << "SDL2 CUDA OpenGL Mandelbrotr" << std::endl;
+
+    SDL_version compiled;
+    SDL_version linked;
+
+    SDL_VERSION(&compiled);
+    SDL_GetVersion(&linked);
+    std::cout << "We compiled against SDL version    " << int(compiled.major) << "." << int(compiled.minor) << "." << int(compiled.patch) << std::endl;
+    std::cout << "We are linking against SDL version " << int(linked.major) << "." << int(linked.minor) << "." << int(linked.patch) << std::endl;
+
+    // FIXME cuda version
+    // FIXME opengl version
+    // FIXME GLEW version
+    // FIXME GLM version
+
     if(!init()) {
         loop();
     }
@@ -69,7 +86,7 @@ bool App::initWindow()
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         WINDOW_START_WIDTH, WINDOW_START_HEIGHT,
-        SDL_WINDOW_OPENGL);
+        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     if (mSDLWindow == NULL) {
         std::cerr << "Failed to create main window" << std::endl;
         SDL_Quit();
@@ -124,9 +141,75 @@ void App::loop()
                 running = false;
                 break;
             }
-            if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == SDLK_ESCAPE) {
+            else if (event.type == SDL_KEYDOWN) {
+                switch (event.key.keysym.sym) {
+                case SDLK_ESCAPE:
                     running = false;
+                    break;
+                case SDLK_d:
+                    mAppMandelbrot->doublePrecision(true);
+                    break;
+                case SDLK_s:
+                    mAppMandelbrot->doublePrecision(false);
+                    break;
+                case SDLK_f: // FIXME
+                    std::cout << "switchFullscreen NYI" << std::endl;
+                    break;
+                case SDLK_RETURN: // FIXME
+                    std::cout << "zoomOutMode NYI" << std::endl;
+                    break;
+                case SDLK_1:
+                    mAppMandelbrot->iterMult(1);
+                    break;
+                case SDLK_2:
+                    mAppMandelbrot->iterMult(2);
+                    break;
+                case SDLK_3:
+                    mAppMandelbrot->iterMult(3);
+                    break;
+                case SDLK_4:
+                    mAppMandelbrot->iterMult(4);
+                    break;
+                case SDLK_p:
+                    std::cout << "Center = " << mAppMandelbrot->centerX() << ", " << mAppMandelbrot->centerY() << std::endl;
+                    std::cout << "Zoom =   " << mAppMandelbrot->zoom() << std::endl;
+                    break;
+                case SDLK_w: // FIXME
+                    std::cout << "saveImage NYI" << std::endl;
+                    break;
+                }
+                // FIXME other keys
+            }
+            else if (event.type == SDL_WINDOWEVENT) {
+                if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+                    resize(event.window.data1, event.window.data2);
+                }
+            }
+            else if (event.type == SDL_MOUSEBUTTONDOWN) {
+                if (event.button.button == SDL_BUTTON_LEFT) {
+                    mMouseStartX = mMouseX = event.button.x;
+                    mMouseStartY = mMouseY = event.button.y;
+                    mCenterStartX = mAppMandelbrot->centerX();
+                    mCenterStartY = mAppMandelbrot->centerY();
+                    mMouseDown = true;
+                }
+            }
+            else if (event.type == SDL_MOUSEMOTION) {
+                mMouseX = event.motion.x;
+                mMouseY = event.motion.y;
+            }
+            else if (event.type == SDL_MOUSEBUTTONUP) {
+                if (event.button.button == SDL_BUTTON_LEFT) {
+                    mMouseDown = false;
+                }
+            }
+            else if (event.type == SDL_MOUSEWHEEL) {
+                const double zoomFactor = 1.1;
+                if(event.wheel.y > 0) {
+                    mAppMandelbrot->zoomMul(zoomFactor);
+                }
+                else {
+                    mAppMandelbrot->zoomDiv(zoomFactor);
                 }
             }
         }
@@ -135,59 +218,6 @@ void App::loop()
         mAppGL->render();
         SDL_GL_SwapWindow(mSDLWindow);
     }
-    /*
-    bool running = true;
-    while (running)
-    {
-        sf::Event event;
-        while (mRenderWindow->pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
-                running = false;
-            }
-            else if (event.type == sf::Event::Resized) {
-                resize(event.size.width, event.size.height);
-            }
-            else if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::Escape) {
-                    running = false;
-                }
-            }
-            else if (event.type == sf::Event::MouseButtonPressed) {
-                if (event.mouseButton.button == sf::Mouse::Left) {
-                    mMouseStartX = mMouseX = event.mouseButton.x;
-                    mMouseStartY = mMouseY = event.mouseButton.y;
-                    mCenterStartX = mAppMandelbrot->centerX();
-                    mCenterStartY = mAppMandelbrot->centerY();
-                    mMouseDown = true;
-                }
-            }
-            else if (event.type == sf::Event::MouseMoved) {
-                mMouseX = event.mouseMove.x;
-                mMouseY = event.mouseMove.y;
-            }
-            else if (event.type == sf::Event::MouseButtonReleased) {
-                if (event.mouseButton.button == sf::Mouse::Left) {
-                    mMouseDown = false;
-                }
-            }
-            else if (event.type == sf::Event::MouseWheelScrolled) {
-                const double zoomFactor = 1.1;
-                if(event.mouseWheelScroll.delta > 0) {
-                    mAppMandelbrot->zoomMul(zoomFactor);
-                }
-                else {
-                    mAppMandelbrot->zoomDiv(zoomFactor);
-                }
-            }
-        }
-
-        update();
-        mAppMandelbrot->render();
-        mAppGL->render();
-
-        mRenderWindow->display();
-    }
-    */
 }
 
 void App::update()

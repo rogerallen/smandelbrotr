@@ -16,13 +16,18 @@ class AppGLProgram {
     std::string readFile(const std::string &fileName) {
         std::ifstream ifs(fileName.c_str(), std::ios::in | std::ios::binary | std::ios::ate);
 
-        std::ifstream::pos_type fileSize = ifs.tellg();
-        ifs.seekg(0, std::ios::beg);
+        if(ifs.is_open()) {
+            std::ifstream::pos_type fileSize = ifs.tellg();
+            ifs.seekg(0, std::ios::beg);
 
-        std::vector<char> bytes(fileSize);
-        ifs.read(bytes.data(), fileSize);
+            std::vector<char> bytes(fileSize);
+            ifs.read(bytes.data(), fileSize);
 
-        return std::string(bytes.data(), fileSize);
+            return std::string(bytes.data(), fileSize);
+        } else {
+            std::cerr << "Failed to open file: " << fileName << std::endl;
+            exit(EXIT_FAILURE);
+        }
     }
     GLuint createShader(const char *resource, GLuint type) {
         GLuint shader = glCreateShader(type);
