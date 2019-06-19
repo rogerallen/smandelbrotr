@@ -1,7 +1,7 @@
 #ifndef SMANDELBROTR_APP_GL_PROGRAM_H
 #define SMANDELBROTR_APP_GL_PROGRAM_H
 
-#include <SFML/OpenGL.hpp>
+#include <GL/glew.h>
 #include "glm/glm.hpp"
 #include "glm/ext.hpp"
 #include <fstream>

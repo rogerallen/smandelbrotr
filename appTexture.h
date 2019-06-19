@@ -1,7 +1,7 @@
 #ifndef SMANDELBROTR_APP_TEXTURE_H
 #define SMANDELBROTR_APP_TEXTURE_H
 
-#include <SFML/OpenGL.hpp>
+#include <GL/glew.h>
 
 class AppTexture {
     GLuint mId;

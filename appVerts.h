@@ -3,7 +3,7 @@
 
 #include "appVbo.h"
 
-#include <SFML/OpenGL.hpp>
+#include <GL/glew.h>
 
 class AppVerts {
     GLuint mId;

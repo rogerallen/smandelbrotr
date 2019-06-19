@@ -1,14 +1,19 @@
-#include <SFML/Config.hpp>
+#include <GL/glew.h>
+#include <SDL.h>
 #include <iostream>
 #include "app.h"
 
 int main()
 {
-    std::cout << "SFML Mandelbrotr" << std::endl;
-    std::cout << "SFML V" <<
-        SFML_VERSION_MAJOR << "." <<
-        SFML_VERSION_MINOR << "." <<
-        SFML_VERSION_PATCH << std::endl;
+    std::cout << "SDL2 CUDA OpenGL Mandelbrotr" << std::endl;
+
+    SDL_version compiled;
+    SDL_version linked;
+
+    SDL_VERSION(&compiled);
+    SDL_GetVersion(&linked);
+    std::cout << "We compiled against SDL version    " << compiled.major << "." << compiled.minor << "." << compiled.patch << std::endl;
+    std::cout << "We are linking against SDL version " << linked.major << "." << linked.minor << "." << linked.patch << std::endl;
 
     App app;
     app.run();

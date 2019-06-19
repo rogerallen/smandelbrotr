@@ -6,7 +6,7 @@
 #include "appTexture.h"
 #include "appVerts.h"
 
-#include <SFML/OpenGL.hpp>
+#include <GL/glew.h>
 #include "glm/glm.hpp"
 #include "glm/ext.hpp"
 

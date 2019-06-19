@@ -1,5 +1,5 @@
 //#include "appGL.h"
-#include <SFML/OpenGL.hpp>
+#include <GL/glew.h>
 #include <stdio.h>
 
 void GLAPIENTRY

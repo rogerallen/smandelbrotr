@@ -1,7 +1,7 @@
 #ifndef SMANDELBROTR_APP_VBO_H
 #define SMANDELBROTR_APP_VBO_H
 
-#include <SFML/OpenGL.hpp>
+#include <GL/glew.h>
 
 #define BUFFER_OFFSET(i) ((void*)(i))
 

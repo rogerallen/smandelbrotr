@@ -3,8 +3,8 @@
 // https://stackoverflow.com/questions/14038589/what-is-the-canonical-way-to-check-for-errors-using-the-cuda-runtime-api
 // s/gpu/cuda/
 
-#include <cuda_runtime_api.h>
 #include <cuda.h>
+#include <cuda_runtime_api.h>
 
 #include <stdio.h>
 

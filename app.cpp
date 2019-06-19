@@ -3,14 +3,17 @@
 App::App()
 {
     mSwitchFullscreen = false;
-    mIsFullscreen = false;
-    mZoomOutMode = false;
-    mSaveImage = false;
-    mMouseDown = false;
-    mMonitorWidth = sf::VideoMode::getDesktopMode().width;
-    mMonitorHeight = sf::VideoMode::getDesktopMode().height;
-    mPrevWindowWidth = mPrevWindowHeight = -1;
+    mIsFullscreen     = false;
+    mZoomOutMode      = false;
+    mSaveImage        = false;
+    mMouseDown        = false;
+    mPrevWindowWidth  = mPrevWindowHeight = -1;
+
+    mMonitorWidth     = -1;//FIXMEsf::VideoMode::getDesktopMode().width;
+    mMonitorHeight    = -1;//FIXMEsf::VideoMode::getDesktopMode().height;
+
     mMouseStartX = mMouseStartY = mMouseX = mMouseY = mCenterStartX = mCenterStartY = -1;
+
 }
 
 void App::run()
@@ -18,13 +21,22 @@ void App::run()
     if(!init()) {
         loop();
     }
+    cleanup();
+}
+
+void App::cleanup() {
+    std::cout << "Exiting..." << std::endl;
+    mAppMandelbrot->render();
+    mAppGL->render();
 }
 
 // initialize SMFL, OpenGL, CUDA & Mandelbrot classes
 // return true on error
 bool App::init()
 {
-    initWindow();
+    if(initWindow()) {
+        return true;
+    }
     mAppGL = new AppGL(mAppWindow, mMonitorWidth, mMonitorHeight);
     if(AppCUDA::setDevice()) {
         return true;
@@ -34,52 +46,96 @@ bool App::init()
     return false;
 }
 
-// initialize SFML window
-void App::initWindow()
+// initialize SDL2 window
+// return true on error
+bool App::initWindow()
 {
+    // Initialize SDL Video
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        std::cerr << "Failed to initialize SDL video" << std::endl;
+        return true;
+    }
+
+    SDL_DisplayMode DM;
+    SDL_GetCurrentDisplayMode(0, &DM);
+    mMonitorWidth  = DM.w;
+    mMonitorHeight = DM.h;
+
     mAppWindow = new AppWindow(WINDOW_START_WIDTH, WINDOW_START_HEIGHT);
 
-    sf::ContextSettings settings;
-    settings.depthBits         = 0;
-    settings.stencilBits       = 0;
-    settings.antialiasingLevel = 1;
-    settings.majorVersion      = 3;
-    settings.minorVersion      = 3;
-    mRenderWindow = new sf::RenderWindow(sf::VideoMode(mAppWindow->width(), mAppWindow->height()),
-                                    "SMandelbrotr",
-                                    sf::Style::Default,
-                                    settings);
-    mRenderWindow->setVerticalSyncEnabled(true);
+    // Create main window
+    mSDLWindow = SDL_CreateWindow(
+        "SMandelbrotr",
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        WINDOW_START_WIDTH, WINDOW_START_HEIGHT,
+        SDL_WINDOW_OPENGL);
+    if (mSDLWindow == NULL) {
+        std::cerr << "Failed to create main window" << std::endl;
+        SDL_Quit();
+        return true;
+    }
 
-    settings = mRenderWindow->getSettings();
-    std::cout << "depth bits:" << settings.depthBits << std::endl;
-    std::cout << "stencil bits:" << settings.stencilBits << std::endl;
-    std::cout << "antialiasing level:" << settings.antialiasingLevel << std::endl;
-    std::cout << "version:" << settings.majorVersion << "." << settings.minorVersion << std::endl;
+    // Initialize rendering context
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(
+        SDL_GL_CONTEXT_PROFILE_MASK,
+        SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 0);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-    mRenderWindow->setActive(true);
-    glewInit();
+    mSDLGLContext = SDL_GL_CreateContext(mSDLWindow);
+    if (mSDLGLContext == NULL) {
+        std::cerr << "Failed to create GL context" << std::endl;
+        SDL_DestroyWindow(mSDLWindow);
+        SDL_Quit();
+        return true;
+    }
 
+    SDL_GL_SetSwapInterval(1); // Use VSYNC
+
+    // Initialize GL Extension Wrangler (GLEW)
+    GLenum err;
+    glewExperimental = GL_TRUE; // Please expose OpenGL 3.x+ interfaces
+    err = glewInit();
+    if (err != GLEW_OK) {
+        std::cerr << "Failed to init GLEW" << std::endl;
+        SDL_GL_DeleteContext(mSDLGLContext);
+        SDL_DestroyWindow(mSDLWindow);
+        SDL_Quit();
+        return true;
+    }
+
+    return false;
 }
 
 void App::loop()
 {
-    /*
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
-    sf::Font font;
-    if(!font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf")) {
-        std::cerr << "CANNOT FONT" << std::endl;
+    std::cout << "Running..." << std::endl;
+    bool running = true;
+    while (running) {
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE) {
+                running = false;
+                break;
+            }
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_ESCAPE) {
+                    running = false;
+                }
+            }
+        }
+        update();
+        mAppMandelbrot->render();
+        mAppGL->render();
+        SDL_GL_SwapWindow(mSDLWindow);
     }
-    sf::Text text;
-    text.setFont(font);
-    text.setString("SMFL Mandelbrotr");
-    text.setCharacterSize(24);
-    //text.setFillColor(sf::Color::White);
-    text.setColor(sf::Color::Black);
-    */
-
-
+    /*
     bool running = true;
     while (running)
     {
@@ -129,18 +185,9 @@ void App::loop()
         mAppMandelbrot->render();
         mAppGL->render();
 
-        /*
-        // FIXME do this only when necessary
-        mRenderWindow->pushGLStates();
-        //mRenderWindow->clear();
-        mRenderWindow->draw(shape);
-        mRenderWindow->draw(text);
-        mRenderWindow->popGLStates();
-        */
-
         mRenderWindow->display();
     }
-
+    */
 }
 
 void App::update()

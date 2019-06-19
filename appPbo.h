@@ -2,10 +2,11 @@
 #define SMANDELBROTR_APP_PBO_H
 
 #include "cudaErrorCheck.h"
-#include <cuda_runtime_api.h>
+#include <cuda.h>
+//#include <cuda_runtime_api.h>
 #include <cuda_gl_interop.h>
 
-#include <SFML/OpenGL.hpp>
+#include <GL/glew.h>
 
 class AppPbo {
     GLuint mId;
