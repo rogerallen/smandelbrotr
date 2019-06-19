@@ -10,6 +10,8 @@
 #include "glm/glm.hpp"
 #include "glm/ext.hpp"
 
+#include <string>
+
 void GLAPIENTRY
 MessageCallback( GLenum source,
                  GLenum type,
@@ -61,8 +63,18 @@ public:
         // Shared CUDA/GL pixel buffer
         mSharedPbo = new AppPbo(maxWidth, maxHeight);
         mSharedTex = new AppTexture(maxWidth, maxHeight);
-        // FIXME find absolute paths.
-        mBasicProg = new AppGLProgram("../basic_vert.glsl", "../basic_frag.glsl");
+        // find absolute paths.
+        std::string file_path = __FILE__;
+#ifdef WIN32
+        const std::string path_sep = "\\";
+#else
+        const std::string path_sep = "/";
+#endif
+        std::string file_dir = file_path.substr(0, file_path.rfind(path_sep));
+        std::cout << file_dir << std::endl;
+        mBasicProg = new AppGLProgram(
+            file_dir + path_sep + "basic_vert.glsl",
+            file_dir + path_sep + "basic_frag.glsl");
         float coords[] = {0.0f, 1.0f, // 8 attrs, 4 verts
                            1.0f, 1.0f,
                            0.0f, 0.0f,

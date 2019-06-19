@@ -105,6 +105,7 @@ bool App::initWindow()
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 0);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
+    // NOT WORKING...
     mSDLGLContext = SDL_GL_CreateContext(mSDLWindow);
     if (mSDLGLContext == NULL) {
         std::cerr << "Failed to create GL context" << std::endl;
@@ -114,6 +115,11 @@ bool App::initWindow()
     }
 
     SDL_GL_SetSwapInterval(1); // Use VSYNC
+
+    SDL_Renderer *r = SDL_GetRenderer(mSDLWindow);
+    float scaleX = 0, scaleY = 0;
+    SDL_RenderGetScale(r, &scaleX, &scaleY);
+    std::cout << "window scale = " << scaleX << ", " << scaleY << std::endl;
 
     // Initialize GL Extension Wrangler (GLEW)
     GLenum err;

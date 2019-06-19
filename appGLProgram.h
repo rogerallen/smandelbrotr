@@ -29,7 +29,7 @@ class AppGLProgram {
             exit(EXIT_FAILURE);
         }
     }
-    GLuint createShader(const char *resource, GLuint type) {
+    GLuint createShader(const std::string resource, GLuint type) {
         GLuint shader = glCreateShader(type);
         std::string source = readFile(resource);
         const char *source_c_str = source.c_str();
@@ -50,7 +50,7 @@ class AppGLProgram {
         return shader;
     }
 public:
-    AppGLProgram(const char *vertProgramPath, const char *fragProgramPath) {
+    AppGLProgram(const std::string &vertProgramPath, const std::string &fragProgramPath) {
         mId = glCreateProgram();
         GLuint vshader = createShader(vertProgramPath, GL_VERTEX_SHADER);
         GLuint fshader = createShader(fragProgramPath, GL_FRAGMENT_SHADER);

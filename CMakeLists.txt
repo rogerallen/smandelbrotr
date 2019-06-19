@@ -7,6 +7,7 @@ if(WIN32)
     set(GLEW_INCLUDE_DIR  "/Users/rallen/Documents/Devel/glew-2.1.0/include")
     set(GLEW_LIBRARY      "/Users/rallen/Documents/Devel/glew-2.1.0/lib/Release/x64/glew32.lib")
     set(GLEW_DLL_DIR      "/Users/rallen/Documents/Devel/glew-2.1.0/bin/Release/x64")
+    set(GLM_DIR           "/Users/rallen/Documents/Devel/glm-0.9.9.5")
 endif()
 
 include(CheckLanguage)
@@ -31,7 +32,9 @@ target_link_libraries(smandelbrotr cuda)
 set_target_properties(smandelbrotr PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 target_compile_features(smandelbrotr PUBLIC cxx_std_11)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}")
+target_include_directories(smandelbrotr PUBLIC "${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}")
+target_include_directories(smandelbrotr PUBLIC "${GLM_DIR}")
 
 # Windows prereq: get dev libraries from https://www.libsdl.org/download-2.0.php
 find_package(SDL2 REQUIRED)
