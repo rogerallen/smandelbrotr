@@ -1,5 +1,14 @@
 #include "app.h"
 
+#ifdef WIN32
+// https://seabird.handmade.network/blogs/p/2460-be_aware_of_high_dpi
+#pragma comment(lib, "Shcore.lib")
+
+#include <windows.h>
+#include <ShellScalingAPI.h>
+#include <comdef.h>
+#endif
+
 App::App()
 {
     mSwitchFullscreen = false;
@@ -67,6 +76,10 @@ bool App::init()
 // return true on error
 bool App::initWindow()
 {
+#ifdef WIN32
+    SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
+#endif
+
     // Initialize SDL Video
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         std::cerr << "Failed to initialize SDL video" << std::endl;
@@ -75,8 +88,8 @@ bool App::initWindow()
 
     SDL_DisplayMode DM;
     SDL_GetCurrentDisplayMode(0, &DM);
-    mMonitorWidth  = DM.w;
-    mMonitorHeight = DM.h;
+    mMonitorWidth = DM.w;// *2.25;
+    mMonitorHeight = DM.h;// *2.25;
 
     mAppWindow = new AppWindow(WINDOW_START_WIDTH, WINDOW_START_HEIGHT);
 
@@ -86,7 +99,7 @@ bool App::initWindow()
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         WINDOW_START_WIDTH, WINDOW_START_HEIGHT,
-        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
     if (mSDLWindow == NULL) {
         std::cerr << "Failed to create main window" << std::endl;
         SDL_Quit();
@@ -116,10 +129,12 @@ bool App::initWindow()
     SDL_GL_SetSwapInterval(1); // Use VSYNC
 
     // NOT WORKING...
-    SDL_Renderer *r = SDL_GetRenderer(mSDLWindow);
-    float scaleX = 0, scaleY = 0;
-    SDL_RenderGetScale(r, &scaleX, &scaleY);
-    std::cout << "window scale = " << scaleX << ", " << scaleY << std::endl;
+    //SDL_Renderer *r = SDL_GetRenderer(mSDLWindow);
+    int scaleX = 0, scaleY = 0;
+    SDL_GL_GetDrawableSize(mSDLWindow, &scaleX, &scaleY);
+    std::cout << "GL size = " << scaleX << ", " << scaleY << std::endl;
+    SDL_GetWindowSize(mSDLWindow, &scaleX, &scaleY);
+    std::cout << "window size = " << scaleX << ", " << scaleY << std::endl;
 
     // Initialize GL Extension Wrangler (GLEW)
     GLenum err;
