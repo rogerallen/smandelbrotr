@@ -63,6 +63,7 @@ public:
         // Shared CUDA/GL pixel buffer
         mSharedPbo = new AppPbo(maxWidth, maxHeight);
         mSharedTex = new AppTexture(maxWidth, maxHeight);
+        mPixels = nullptr;
         // find absolute paths.
         std::string file_path = __FILE__;
 #ifdef WIN32
@@ -115,14 +116,11 @@ public:
             float newCoords[] = { 0.0f, hratio, wratio, hratio, 0.0f, 0.0f, wratio, 0.0f };
             mVerts->updateTexCoords(newCoords);
         }
-        /* FIXME
-          // resize rgb array for saving pixels
-          if(m_pixels != nullptr) {
-              delete[](m_pixels);
-          }
-          m_pixels = new unsigned char[m_window_width * m_window_height * 4];
-          printf("m_pixels size = %d\n",m_window_width * m_window_height * 4);
-        */
+        // resize rgb array for saving pixels (FIXME? add to destructor)
+        if(mPixels != nullptr) {
+            delete[](mPixels);
+        }
+        mPixels = new unsigned char[mWindow->width() * mWindow->height() * 4];
     }
     void render() {
         glClear(GL_COLOR_BUFFER_BIT);
@@ -141,8 +139,9 @@ public:
         mSharedTex->unbind();
         mBasicProg->unbind();
     }
-    void readPixels() { // ??? get access to pixels some other way?
+    unsigned char *readPixels() {
         glReadPixels(0, 0, mWindow->width(), mWindow->height(), GL_RGBA, GL_UNSIGNED_BYTE, mPixels);
+        return mPixels;
     }
 };
 

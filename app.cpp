@@ -200,7 +200,7 @@ void App::loop()
                     std::cout << "Zoom =   " << mAppMandelbrot->zoom() << std::endl;
                     break;
                 case SDLK_w: // FIXME
-                    std::cout << "saveImage NYI" << std::endl;
+                    mSaveImage = true;
                     break;
                 }
             }
@@ -243,6 +243,23 @@ void App::loop()
         mAppGL->render();
         SDL_GL_SwapWindow(mSDLWindow);
     }
+}
+
+// Thanks! https://gist.github.com/wduminy/5859474
+SDL_Surface* flip_surface(SDL_Surface* sfc) {
+     SDL_Surface* result = SDL_CreateRGBSurface(sfc->flags, sfc->w, sfc->h,
+         sfc->format->BytesPerPixel * 8, sfc->format->Rmask, sfc->format->Gmask,
+         sfc->format->Bmask, sfc->format->Amask);
+     const auto pitch = sfc->pitch;
+     const auto pxlength = pitch*sfc->h;
+     auto pixels = static_cast<unsigned char*>(sfc->pixels) + pxlength;
+     auto rpixels = static_cast<unsigned char*>(result->pixels) ;
+     for(auto line = 0; line < sfc->h; ++line) {
+         memcpy(rpixels,pixels,pitch);
+         pixels -= pitch;
+         rpixels += pitch;
+     }
+     return result;
 }
 
 void App::update()
@@ -302,7 +319,21 @@ void App::update()
         mAppMandelbrot->centerX(mCenterStartX - centerDx);
         mAppMandelbrot->centerY(mCenterStartY - centerDy);
     }
-    // TODO saveImage
+
+    // saveImage
+    if(mSaveImage) {
+        mSaveImage = false;
+        std::cout << "Saving save.bmp" << std::endl;
+        SDL_Surface *surface = SDL_CreateRGBSurfaceFrom(
+            (void *)mAppGL->readPixels(),
+            mAppWindow->width(), mAppWindow->height(), 32, 4*mAppWindow->width(),
+            0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000
+            );
+        SDL_Surface *flipped_surface = flip_surface(surface);
+        SDL_SaveBMP(flipped_surface, "save.bmp");
+        SDL_FreeSurface(flipped_surface);
+        SDL_FreeSurface(surface);
+    }
 }
 
 void App::resize(unsigned width, unsigned height)
