@@ -180,8 +180,8 @@ void App::loop()
                         skipNextF = false;
                     }
                     break;
-                case SDLK_RETURN: // FIXME
-                    std::cout << "zoomOutMode NYI" << std::endl;
+                case SDLK_RETURN:
+                    mZoomOutMode = true;
                     break;
                 case SDLK_1:
                     mAppMandelbrot->iterMult(1);
@@ -248,6 +248,7 @@ void App::loop()
 void App::update()
 {
     mAppGL->handleResize();
+
     // handle fullscreen
     if(mSwitchFullscreen) {
 #ifndef NDEBUG
@@ -273,7 +274,15 @@ void App::update()
             SDL_SetWindowFullscreen(mSDLWindow, SDL_WINDOW_FULLSCREEN_DESKTOP); // "fake" fullscreen
         }
     }
-    // TODO zoomOutMode
+
+    // handle zoomOutMode
+    if(mZoomOutMode) {
+        mAppMandelbrot->zoomDiv(1.1);
+        if(mAppMandelbrot->zoom() < 0.5) {
+            mZoomOutMode = false;
+        }
+    }
+
     if(mMouseDown) {
         double dx = mMouseX - mMouseStartX;
         double dy = mMouseY - mMouseStartY;
