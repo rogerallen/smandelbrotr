@@ -31,6 +31,7 @@ void App::run()
 {
     std::cout << "SDL2 CUDA OpenGL Mandelbrotr" << std::endl;
 
+#ifndef NDEBUG
     SDL_version compiled;
     SDL_version linked;
 
@@ -43,6 +44,9 @@ void App::run()
     // FIXME opengl version
     // FIXME GLEW version
     // FIXME GLM version
+#else
+	std::cout << "Release build" << std::endl;
+#endif
 
     if(!init()) {
         loop();
@@ -51,7 +55,9 @@ void App::run()
 }
 
 void App::cleanup() {
+#ifndef NDEBUG
     std::cout << "Exiting..." << std::endl;
+#endif
     mAppMandelbrot->render();
     mAppGL->render();
 }
@@ -88,17 +94,21 @@ bool App::initWindow()
 
     SDL_DisplayMode DM;
     SDL_GetCurrentDisplayMode(0, &DM);
-    mMonitorWidth = DM.w;// *2.25;
-    mMonitorHeight = DM.h;// *2.25;
+    mMonitorWidth = DM.w;
+    mMonitorHeight = DM.h;
 
-    mAppWindow = new AppWindow(WINDOW_START_WIDTH, WINDOW_START_HEIGHT);
+	int startDim = min(mMonitorWidth, mMonitorHeight) / 2;
+#ifndef NDEBUG
+	std::cout << "starting width & height = " << startDim << std::endl;
+#endif
+    mAppWindow = new AppWindow(startDim, startDim);
 
     // Create main window
     mSDLWindow = SDL_CreateWindow(
         "SMandelbrotr",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        WINDOW_START_WIDTH, WINDOW_START_HEIGHT,
+		startDim, startDim,
         SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
     if (mSDLWindow == NULL) {
         std::cerr << "Failed to create main window" << std::endl;
@@ -145,7 +155,9 @@ bool App::initWindow()
 
 void App::loop()
 {
+#ifndef NDEBUG
     std::cout << "Running..." << std::endl;
+#endif
     bool running = true;
     static bool skipNextF = false;
     while (running) {
@@ -161,7 +173,6 @@ void App::loop()
                     running = false;
                     break;
                 case SDLK_d:
-                    std::cout << "d" << std::endl;
                     mAppMandelbrot->doublePrecision(true);
                     break;
                 case SDLK_s:
@@ -169,13 +180,14 @@ void App::loop()
                     break;
                 case SDLK_f:
                     // getting double f events when we switch to fullscreen
+					// but only on linux!
                     // on switch to windowed, there is only the one f
 #ifndef NDEBUG
                     std::cout << "f" << skipNextF << std::endl;
 #endif
                     if(!skipNextF) {
                         mSwitchFullscreen = true;
-                        skipNextF = !mIsFullscreen;
+                        skipNextF = !mIsFullscreen  && !(WIN32);
                     } else {
                         skipNextF = false;
                     }
@@ -251,7 +263,7 @@ SDL_Surface* flip_surface(SDL_Surface* sfc) {
          sfc->format->BytesPerPixel * 8, sfc->format->Rmask, sfc->format->Gmask,
          sfc->format->Bmask, sfc->format->Amask);
      const auto pitch = sfc->pitch;
-     const auto pxlength = pitch*sfc->h;
+     const auto pxlength = pitch*(sfc->h - 1); // FIXED BUG
      auto pixels = static_cast<unsigned char*>(sfc->pixels) + pxlength;
      auto rpixels = static_cast<unsigned char*>(result->pixels) ;
      for(auto line = 0; line < sfc->h; ++line) {

@@ -19,8 +19,6 @@ class App
     void cleanup();
     void resize(unsigned width, unsigned height);
 
-    const unsigned WINDOW_START_WIDTH = 800, WINDOW_START_HEIGHT = 800;
-
     AppWindow     *mAppWindow;
     AppGL         *mAppGL;
     AppMandelbrot *mAppMandelbrot;

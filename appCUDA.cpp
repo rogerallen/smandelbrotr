@@ -13,7 +13,9 @@ namespace AppCUDA {
             std::cerr << "failed to choose device" << std::endl;
             return true;
         }
-        std::cout << "cuda chose device" << dev << std::endl;
+#ifndef NDEBUG
+        std::cout << "cuda chose device " << dev << std::endl;
+#endif
         if (cudaSetDevice(dev) != cudaSuccess) {
             std::cerr << "failed to set gl device" << std::endl;
             return true;

@@ -57,13 +57,16 @@ public:
     //     0     1 s texture coords
     //
     AppGL(AppWindow *appWindow, unsigned maxWidth, unsigned maxHeight) {
+#ifndef NDEBUG
         std::cout << "maxWidth,height = " << maxWidth << "," << maxHeight << std::endl;
+#endif
         mWindow = appWindow;
         glClearColor(1.0,1.0,0.5,0.0);
         // Shared CUDA/GL pixel buffer
         mSharedPbo = new AppPbo(maxWidth, maxHeight);
         mSharedTex = new AppTexture(maxWidth, maxHeight);
         mPixels = nullptr;
+		// FIXME -- the path to the shaders is fixed at compiletime & used at runtime.  This is too fragile.
         // find absolute paths.
         std::string file_path = __FILE__;
 #ifdef WIN32
@@ -72,7 +75,9 @@ public:
         const std::string path_sep = "/";
 #endif
         std::string file_dir = file_path.substr(0, file_path.rfind(path_sep));
-        std::cout << file_dir << std::endl;
+#ifndef NDEBUG
+        std::cout << "source directory = " << file_dir << std::endl;
+#endif
         mBasicProg = new AppGLProgram(
             file_dir + path_sep + "basic_vert.glsl",
             file_dir + path_sep + "basic_frag.glsl");
