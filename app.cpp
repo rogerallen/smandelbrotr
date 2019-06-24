@@ -128,14 +128,6 @@ bool App::initWindow()
 
     SDL_GL_SetSwapInterval(1); // Use VSYNC
 
-    // NOT WORKING...
-    //SDL_Renderer *r = SDL_GetRenderer(mSDLWindow);
-    int scaleX = 0, scaleY = 0;
-    SDL_GL_GetDrawableSize(mSDLWindow, &scaleX, &scaleY);
-    std::cout << "GL size = " << scaleX << ", " << scaleY << std::endl;
-    SDL_GetWindowSize(mSDLWindow, &scaleX, &scaleY);
-    std::cout << "window size = " << scaleX << ", " << scaleY << std::endl;
-
     // Initialize GL Extension Wrangler (GLEW)
     GLenum err;
     glewExperimental = GL_TRUE; // Please expose OpenGL 3.x+ interfaces
@@ -155,6 +147,7 @@ void App::loop()
 {
     std::cout << "Running..." << std::endl;
     bool running = true;
+    static bool skipNextF = false;
     while (running) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
@@ -168,13 +161,24 @@ void App::loop()
                     running = false;
                     break;
                 case SDLK_d:
+                    std::cout << "d" << std::endl;
                     mAppMandelbrot->doublePrecision(true);
                     break;
                 case SDLK_s:
                     mAppMandelbrot->doublePrecision(false);
                     break;
-                case SDLK_f: // FIXME
-                    std::cout << "switchFullscreen NYI" << std::endl;
+                case SDLK_f:
+                    // getting double f events when we switch to fullscreen
+                    // on switch to windowed, there is only the one f
+#ifndef NDEBUG
+                    std::cout << "f" << skipNextF << std::endl;
+#endif
+                    if(!skipNextF) {
+                        mSwitchFullscreen = true;
+                        skipNextF = !mIsFullscreen;
+                    } else {
+                        skipNextF = false;
+                    }
                     break;
                 case SDLK_RETURN: // FIXME
                     std::cout << "zoomOutMode NYI" << std::endl;
@@ -199,11 +203,11 @@ void App::loop()
                     std::cout << "saveImage NYI" << std::endl;
                     break;
                 }
-                // FIXME other keys
             }
             else if (event.type == SDL_WINDOWEVENT) {
-                if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
-                    resize(event.window.data1, event.window.data2);
+                if ((event.window.event == SDL_WINDOWEVENT_RESIZED) ||
+                    (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)) {
+                        resize(event.window.data1, event.window.data2);
                 }
             }
             else if (event.type == SDL_MOUSEBUTTONDOWN) {
@@ -244,7 +248,31 @@ void App::loop()
 void App::update()
 {
     mAppGL->handleResize();
-    // TODO handle fullscreen
+    // handle fullscreen
+    if(mSwitchFullscreen) {
+#ifndef NDEBUG
+        std::cout << "switch fullscreen ";
+#endif
+        mSwitchFullscreen = false;
+        if(mIsFullscreen) { // switch to windowed
+#ifndef NDEBUG
+            std::cout << "to windowed" << std::endl;
+#endif
+            mIsFullscreen = false;
+            SDL_SetWindowFullscreen(mSDLWindow, 0);
+            SDL_SetWindowSize(mSDLWindow, mPrevWindowWidth, mPrevWindowHeight);
+        }
+        else { // switch to fullscreen
+#ifndef NDEBUG
+            std::cout << std::endl;
+#endif
+            mIsFullscreen = true;
+            mPrevWindowWidth = mAppWindow->width();
+            mPrevWindowHeight = mAppWindow->height();
+            SDL_SetWindowSize(mSDLWindow, mMonitorWidth, mMonitorHeight);
+            SDL_SetWindowFullscreen(mSDLWindow, SDL_WINDOW_FULLSCREEN_DESKTOP); // "fake" fullscreen
+        }
+    }
     // TODO zoomOutMode
     if(mMouseDown) {
         double dx = mMouseX - mMouseStartX;
