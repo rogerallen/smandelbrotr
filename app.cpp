@@ -97,7 +97,7 @@ bool App::initWindow()
     mMonitorWidth = DM.w;
     mMonitorHeight = DM.h;
 
-	int startDim = min(mMonitorWidth, mMonitorHeight) / 2;
+    int startDim = std::min(mMonitorWidth, mMonitorHeight) / 2;
 #ifndef NDEBUG
 	std::cout << "starting width & height = " << startDim << std::endl;
 #endif
@@ -187,7 +187,11 @@ void App::loop()
 #endif
                     if(!skipNextF) {
                         mSwitchFullscreen = true;
-                        skipNextF = !mIsFullscreen  && !(WIN32);
+#ifndef WIN32
+                        skipNextF = !mIsFullscreen;  // linux only
+#else
+                        skipNextF = false; // win32 only
+#endif
                     } else {
                         skipNextF = false;
                     }
