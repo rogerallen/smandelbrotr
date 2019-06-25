@@ -1,9 +1,9 @@
 #ifndef SMANDELBROTR_APP_GL_PROGRAM_H
 #define SMANDELBROTR_APP_GL_PROGRAM_H
 
-#include <GL/glew.h>
-#include "glm/glm.hpp"
 #include "glm/ext.hpp"
+#include "glm/glm.hpp"
+#include <GL/glew.h>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -13,10 +13,11 @@ class AppGLProgram {
     GLuint mAttrPosition;
     GLuint mAttrTexCoords;
     GLuint mUniCameraToView;
-    std::string readFile(const std::string &fileName) {
+    std::string readFile(const std::string &fileName)
+    {
         std::ifstream ifs(fileName.c_str(), std::ios::in | std::ios::binary | std::ios::ate);
 
-        if(ifs.is_open()) {
+        if (ifs.is_open()) {
             std::ifstream::pos_type fileSize = ifs.tellg();
             ifs.seekg(0, std::ios::beg);
 
@@ -24,12 +25,14 @@ class AppGLProgram {
             ifs.read(bytes.data(), fileSize);
 
             return std::string(bytes.data(), fileSize);
-        } else {
+        }
+        else {
             std::cerr << "Failed to open file: " << fileName << std::endl;
             exit(EXIT_FAILURE);
         }
     }
-    GLuint createShader(const std::string resource, GLuint type) {
+    GLuint createShader(const std::string resource, GLuint type)
+    {
         GLuint shader = glCreateShader(type);
         std::string source = readFile(resource);
         const char *source_c_str = source.c_str();
@@ -44,13 +47,15 @@ class AppGLProgram {
             std::cout << infoLog << std::endl;
         }
         if (compiled == 0) {
-            std::cerr << "Could not compile shader: "<< resource << std::endl;
+            std::cerr << "Could not compile shader: " << resource << std::endl;
             exit(99);
         }
         return shader;
     }
-public:
-    AppGLProgram(const std::string &vertProgramPath, const std::string &fragProgramPath) {
+
+  public:
+    AppGLProgram(const std::string &vertProgramPath, const std::string &fragProgramPath)
+    {
         mId = glCreateProgram();
         GLuint vshader = createShader(vertProgramPath, GL_VERTEX_SHADER);
         GLuint fshader = createShader(fragProgramPath, GL_FRAGMENT_SHADER);
@@ -82,7 +87,8 @@ public:
     // unbind this program so OpenGL will not use it.
     void unbind() { glUseProgram(0); }
     // update the camera-to-view matrix uniform.
-    void updateCameraToView(glm::mat4 cameraToView) {
+    void updateCameraToView(glm::mat4 cameraToView)
+    {
         glUniformMatrix4fv(mUniCameraToView, 1, GL_FALSE, glm::value_ptr(cameraToView));
     }
     GLuint attrPosition() { return mAttrPosition; }

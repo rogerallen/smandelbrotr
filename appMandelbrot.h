@@ -6,27 +6,30 @@
 class AppMandelbrot {
     const static bool USE_REAL_TIME_COMPILE = false;
     AppWindow *mWindow;
-    //AppPbo    *mSharedPbo;
-    AppGL     *mAppGL;
+    AppGL *mAppGL;
     // controls for the renderer
-    double    mCenterX, mCenterY, mZoom;
-    int       mIterMult;
-    bool      mDoublePrecision;
-public:
+    double mCenterX, mCenterY, mZoom;
+    int mIterMult;
+    bool mDoublePrecision;
+
+  public:
     AppMandelbrot(AppWindow *window, /*AppPbo *sharedPbo,*/ AppGL *appGL) : mWindow(window),
-                                                                        //mSharedPbo(sharedPbo),
-                                                                        mAppGL(appGL) {
+                                                                            //mSharedPbo(sharedPbo),
+                                                                            mAppGL(appGL)
+    {
         mCenterX = -0.5;
         mCenterY = 0.0;
         mZoom = 0.5;
         mIterMult = 1;
         mDoublePrecision = false;
     }
-    void init() {
+    void init()
+    {
         mAppGL->sharedPbo()->registerBuffer();
         // FIXME real-time compile stuff here
     }
-    void render() {
+    void render()
+    {
         // Run CUDA kernel to write to the PBO
         void *devPtr = mAppGL->sharedPbo()->mapGraphicsResource();
         mandelbrot(devPtr,
@@ -38,17 +41,19 @@ public:
     }
     void doublePrecision(bool b) { mDoublePrecision = b; }
     void iterMult(int i) { mIterMult = i; }
-    void centerX(double d) {
-//#ifdef DEBUG
-//        std::cerr << "centerX = " << d;
-//#endif
+    void centerX(double d)
+    {
+        //#ifdef DEBUG
+        //        std::cerr << "centerX = " << d;
+        //#endif
         mCenterX = d;
     }
     double centerX() { return mCenterX; }
-    void centerY(double d) {
-//#ifdef DEBUG
-//        std::cerr << " centerY = " << d  << std::endl;
-//#endif
+    void centerY(double d)
+    {
+        //#ifdef DEBUG
+        //        std::cerr << " centerY = " << d  << std::endl;
+        //#endif
         mCenterY = d;
     }
     double centerY() { return mCenterY; }

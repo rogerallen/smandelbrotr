@@ -4,14 +4,14 @@
 #include <GL/glew.h>
 
 #include <cuda.h>
-#include <cuda_runtime_api.h>
 #include <cuda_gl_interop.h>
+#include <cuda_runtime_api.h>
 
-#include <iostream>
 #include <cstring>
+#include <iostream>
 
 namespace AppCUDA {
-    bool setDevice();
+bool setDevice();
 };
 
 #endif

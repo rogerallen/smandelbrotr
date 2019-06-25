@@ -4,27 +4,26 @@
 // https://seabird.handmade.network/blogs/p/2460-be_aware_of_high_dpi
 #pragma comment(lib, "Shcore.lib")
 
-#include <windows.h>
 #include <ShellScalingAPI.h>
 #include <comdef.h>
+#include <windows.h>
 #endif
 
 App::App()
 {
     mSwitchFullscreen = false;
-    mIsFullscreen     = false;
-    mZoomOutMode      = false;
-    mSaveImage        = false;
-    mMouseDown        = false;
+    mIsFullscreen = false;
+    mZoomOutMode = false;
+    mSaveImage = false;
+    mMouseDown = false;
 
-    mPrevWindowWidth  = mPrevWindowHeight = -1;
+    mPrevWindowWidth = mPrevWindowHeight = -1;
 
-    mMonitorWidth     = -1;
-    mMonitorHeight    = -1;
+    mMonitorWidth = -1;
+    mMonitorHeight = -1;
 
     mMouseStartX = mMouseStartY =
         mMouseX = mMouseY = mCenterStartX = mCenterStartY = -1;
-
 }
 
 void App::run()
@@ -45,16 +44,17 @@ void App::run()
     // FIXME GLEW version
     // FIXME GLM version
 #else
-	std::cout << "Release build" << std::endl;
+    std::cout << "Release build" << std::endl;
 #endif
 
-    if(!init()) {
+    if (!init()) {
         loop();
     }
     cleanup();
 }
 
-void App::cleanup() {
+void App::cleanup()
+{
 #ifndef NDEBUG
     std::cout << "Exiting..." << std::endl;
 #endif
@@ -66,11 +66,11 @@ void App::cleanup() {
 // return true on error
 bool App::init()
 {
-    if(initWindow()) {
+    if (initWindow()) {
         return true;
     }
     mAppGL = new AppGL(mAppWindow, mMonitorWidth, mMonitorHeight);
-    if(AppCUDA::setDevice()) {
+    if (AppCUDA::setDevice()) {
         return true;
     }
     mAppMandelbrot = new AppMandelbrot(mAppWindow, mAppGL);
@@ -99,7 +99,7 @@ bool App::initWindow()
 
     int startDim = std::min(mMonitorWidth, mMonitorHeight) / 2;
 #ifndef NDEBUG
-	std::cout << "starting width & height = " << startDim << std::endl;
+    std::cout << "starting width & height = " << startDim << std::endl;
 #endif
     mAppWindow = new AppWindow(startDim, startDim);
 
@@ -108,7 +108,7 @@ bool App::initWindow()
         "SMandelbrotr",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-		startDim, startDim,
+        startDim, startDim,
         SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
     if (mSDLWindow == NULL) {
         std::cerr << "Failed to create main window" << std::endl;
@@ -180,19 +180,20 @@ void App::loop()
                     break;
                 case SDLK_f:
                     // getting double f events when we switch to fullscreen
-					// but only on linux!
+                    // but only on linux!
                     // on switch to windowed, there is only the one f
 #ifndef NDEBUG
                     std::cout << "f" << skipNextF << std::endl;
 #endif
-                    if(!skipNextF) {
+                    if (!skipNextF) {
                         mSwitchFullscreen = true;
 #ifndef WIN32
-                        skipNextF = !mIsFullscreen;  // linux only
+                        skipNextF = !mIsFullscreen; // linux only
 #else
                         skipNextF = false; // win32 only
 #endif
-                    } else {
+                    }
+                    else {
                         skipNextF = false;
                     }
                     break;
@@ -223,7 +224,7 @@ void App::loop()
             else if (event.type == SDL_WINDOWEVENT) {
                 if ((event.window.event == SDL_WINDOWEVENT_RESIZED) ||
                     (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)) {
-                        resize(event.window.data1, event.window.data2);
+                    resize(event.window.data1, event.window.data2);
                 }
             }
             else if (event.type == SDL_MOUSEBUTTONDOWN) {
@@ -246,7 +247,7 @@ void App::loop()
             }
             else if (event.type == SDL_MOUSEWHEEL) {
                 const double zoomFactor = 1.1;
-                if(event.wheel.y > 0) {
+                if (event.wheel.y > 0) {
                     mAppMandelbrot->zoomMul(zoomFactor);
                 }
                 else {
@@ -262,20 +263,21 @@ void App::loop()
 }
 
 // Thanks! https://gist.github.com/wduminy/5859474
-SDL_Surface* flip_surface(SDL_Surface* sfc) {
-     SDL_Surface* result = SDL_CreateRGBSurface(sfc->flags, sfc->w, sfc->h,
-         sfc->format->BytesPerPixel * 8, sfc->format->Rmask, sfc->format->Gmask,
-         sfc->format->Bmask, sfc->format->Amask);
-     const auto pitch = sfc->pitch;
-     const auto pxlength = pitch*(sfc->h - 1); // FIXED BUG
-     auto pixels = static_cast<unsigned char*>(sfc->pixels) + pxlength;
-     auto rpixels = static_cast<unsigned char*>(result->pixels) ;
-     for(auto line = 0; line < sfc->h; ++line) {
-         memcpy(rpixels,pixels,pitch);
-         pixels -= pitch;
-         rpixels += pitch;
-     }
-     return result;
+SDL_Surface *flip_surface(SDL_Surface *sfc)
+{
+    SDL_Surface *result = SDL_CreateRGBSurface(sfc->flags, sfc->w, sfc->h,
+                                               sfc->format->BytesPerPixel * 8, sfc->format->Rmask, sfc->format->Gmask,
+                                               sfc->format->Bmask, sfc->format->Amask);
+    const auto pitch = sfc->pitch;
+    const auto pxlength = pitch * (sfc->h - 1); // FIXED BUG
+    auto pixels = static_cast<unsigned char *>(sfc->pixels) + pxlength;
+    auto rpixels = static_cast<unsigned char *>(result->pixels);
+    for (auto line = 0; line < sfc->h; ++line) {
+        memcpy(rpixels, pixels, pitch);
+        pixels -= pitch;
+        rpixels += pitch;
+    }
+    return result;
 }
 
 void App::update()
@@ -283,12 +285,12 @@ void App::update()
     mAppGL->handleResize();
 
     // handle fullscreen
-    if(mSwitchFullscreen) {
+    if (mSwitchFullscreen) {
 #ifndef NDEBUG
         std::cout << "switch fullscreen ";
 #endif
         mSwitchFullscreen = false;
-        if(mIsFullscreen) { // switch to windowed
+        if (mIsFullscreen) { // switch to windowed
 #ifndef NDEBUG
             std::cout << "to windowed" << std::endl;
 #endif
@@ -309,21 +311,21 @@ void App::update()
     }
 
     // handle zoomOutMode
-    if(mZoomOutMode) {
+    if (mZoomOutMode) {
         mAppMandelbrot->zoomDiv(1.1);
-        if(mAppMandelbrot->zoom() < 0.5) {
+        if (mAppMandelbrot->zoom() < 0.5) {
             mZoomOutMode = false;
         }
     }
 
-    if(mMouseDown) {
+    if (mMouseDown) {
         double dx = mMouseX - mMouseStartX;
         double dy = mMouseY - mMouseStartY;
-//#ifdef DEBUG
-//        std::cerr << "dx,dy = " << dx << ", " << dy << std::endl;
-//#endif
+        //#ifdef DEBUG
+        //        std::cerr << "dx,dy = " << dx << ", " << dy << std::endl;
+        //#endif
         double pixelsPerMandelSpace;
-        if(mAppWindow->width() > mAppWindow->height()) {
+        if (mAppWindow->width() > mAppWindow->height()) {
             pixelsPerMandelSpace = mAppWindow->width() * mAppMandelbrot->zoom();
         }
         else {
@@ -337,14 +339,13 @@ void App::update()
     }
 
     // saveImage
-    if(mSaveImage) {
+    if (mSaveImage) {
         mSaveImage = false;
         std::cout << "Saving save.bmp" << std::endl;
         SDL_Surface *surface = SDL_CreateRGBSurfaceFrom(
             (void *)mAppGL->readPixels(),
-            mAppWindow->width(), mAppWindow->height(), 32, 4*mAppWindow->width(),
-            0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000
-            );
+            mAppWindow->width(), mAppWindow->height(), 32, 4 * mAppWindow->width(),
+            0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
         SDL_Surface *flipped_surface = flip_surface(surface);
         SDL_SaveBMP(flipped_surface, "save.bmp");
         SDL_FreeSurface(flipped_surface);
@@ -354,7 +355,7 @@ void App::update()
 
 void App::resize(unsigned width, unsigned height)
 {
-    if( width > 0 && height > 0 &&
+    if (width > 0 && height > 0 &&
         (mAppWindow->width() != width || mAppWindow->height() != height)) {
         mAppWindow->width(width);
         mAppWindow->height(height);

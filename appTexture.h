@@ -6,8 +6,10 @@
 class AppTexture {
     GLuint mId;
     unsigned mWidth, mHeight;
-public:
-    AppTexture(unsigned width, unsigned height) : mWidth(width), mHeight(height) {
+
+  public:
+    AppTexture(unsigned width, unsigned height) : mWidth(width), mHeight(height)
+    {
         glGenTextures(1, &mId);
         glBindTexture(GL_TEXTURE_2D, mId);
         // Allocate the texture memory. This will be filled in by the
@@ -22,7 +24,8 @@ public:
     // copy from the pixel buffer object to this texture. Since the
     // TexSubImage pixels parameter (final one) is 0, Data is coming
     // from a PBO, not host memory
-    void copyFromPbo() {
+    void copyFromPbo()
+    {
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, mWidth, mHeight, GL_BGRA, GL_UNSIGNED_BYTE, 0);
     }
 
@@ -30,15 +33,16 @@ public:
     unsigned height() { return mHeight; }
 
     // bind this texture so OpenGL will use it
-    void bind() {
+    void bind()
+    {
         glBindTexture(GL_TEXTURE_2D, mId);
     }
 
     // unbind this texture so OpenGL will stop using it
-    void unbind() {
+    void unbind()
+    {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
-
 };
 
 #endif

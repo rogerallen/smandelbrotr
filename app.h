@@ -1,16 +1,15 @@
 #ifndef SMANDELBROTR_APP_H
 #define SMANDELBROTR_APP_H
 
+#include "appCUDA.h"
+#include "appGL.h"
+#include "appMandelbrot.h"
+#include "appWindow.h"
 #include <GL/glew.h>
 #include <SDL.h>
 #include <iostream>
-#include "appWindow.h"
-#include "appGL.h"
-#include "appCUDA.h"
-#include "appMandelbrot.h"
 
-class App
-{
+class App {
 
     bool init();
     bool initWindow();
@@ -19,23 +18,23 @@ class App
     void cleanup();
     void resize(unsigned width, unsigned height);
 
-    AppWindow     *mAppWindow;
-    AppGL         *mAppGL;
+    AppWindow *mAppWindow;
+    AppGL *mAppGL;
     AppMandelbrot *mAppMandelbrot;
-    SDL_Window    *mSDLWindow;
-    SDL_GLContext  mSDLGLContext;
-    bool           mSwitchFullscreen;
-    bool           mIsFullscreen;
-    int            mMonitorWidth, mMonitorHeight;
-    int            mPrevWindowWidth, mPrevWindowHeight;
-    bool           mZoomOutMode;
-    bool           mSaveImage;
-    bool           mMouseDown;
-    double         mMouseStartX, mMouseStartY;
-    double         mMouseX, mMouseY;
-    double         mCenterStartX, mCenterStartY;
+    SDL_Window *mSDLWindow;
+    SDL_GLContext mSDLGLContext;
+    bool mSwitchFullscreen;
+    bool mIsFullscreen;
+    int mMonitorWidth, mMonitorHeight;
+    int mPrevWindowWidth, mPrevWindowHeight;
+    bool mZoomOutMode;
+    bool mSaveImage;
+    bool mMouseDown;
+    double mMouseStartX, mMouseStartY;
+    double mMouseX, mMouseY;
+    double mCenterStartX, mCenterStartY;
 
-public:
+  public:
     App();
     void run();
 };

@@ -9,8 +9,10 @@ class AppVerts {
     GLuint mId;
     AppVbo *mPositionVbo, *mTexCoordsVbo;
     int mNumVerts;
-public:
-AppVerts(int numAttrs, int numVerts, GLuint posAttr, float *posCoords, int texAttr, float *texCoords) : mNumVerts(numVerts) {
+
+  public:
+    AppVerts(int numAttrs, int numVerts, GLuint posAttr, float *posCoords, int texAttr, float *texCoords) : mNumVerts(numVerts)
+    {
         // NOTE all VBOs are 2-component (X,Y or S,T)
         glGenVertexArrays(1, &mId);
         glBindVertexArray(mId);
@@ -19,21 +21,26 @@ AppVerts(int numAttrs, int numVerts, GLuint posAttr, float *posCoords, int texAt
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
     }
-    void draw() {
+    void draw()
+    {
         glDrawArrays(GL_TRIANGLE_STRIP, 0, mNumVerts);
     }
-    void updatePosition(float *newCoords) {
+    void updatePosition(float *newCoords)
+    {
         mPositionVbo->update(newCoords);
     }
-    void updateTexCoords(float *newCoords) {
+    void updateTexCoords(float *newCoords)
+    {
         mTexCoordsVbo->update(newCoords);
     }
     // bind this VertexArray so OpenGL can use it
-    void bind() {
+    void bind()
+    {
         glBindVertexArray(mId);
     }
     // unbind this VertexArray so OpenGL will stop using it
-    void unbind() {
+    void unbind()
+    {
         glBindVertexArray(0);
     }
 };
