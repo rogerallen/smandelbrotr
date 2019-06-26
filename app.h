@@ -7,6 +7,7 @@
 #include "appWindow.h"
 #include <GL/glew.h>
 #include <SDL.h>
+#include <algorithm>
 #include <iostream>
 
 class App {

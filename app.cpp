@@ -1,6 +1,8 @@
 #include "app.h"
 
 #ifdef WIN32
+// don't interfere with std::min,max 
+#define NOMINMAX
 // https://seabird.handmade.network/blogs/p/2460-be_aware_of_high_dpi
 #pragma comment(lib, "Shcore.lib")
 
