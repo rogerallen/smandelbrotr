@@ -30,23 +30,28 @@ App::App()
 
 void App::run()
 {
-    std::cout << "SDL2 CUDA OpenGL Mandelbrotr" << std::endl;
-
 #ifndef NDEBUG
+    std::cout << "SDL2 CUDA OpenGL Mandelbrotr" << std::endl;
+    std::cout << "Versions-------------+-------" << std::endl;
     SDL_version compiled;
     SDL_version linked;
 
     SDL_VERSION(&compiled);
     SDL_GetVersion(&linked);
-    std::cout << "We compiled against SDL version    " << int(compiled.major) << "." << int(compiled.minor) << "." << int(compiled.patch) << std::endl;
-    std::cout << "We are linking against SDL version " << int(linked.major) << "." << int(linked.minor) << "." << int(linked.patch) << std::endl;
+    std::cout << "SDL compiled version | " << int(compiled.major) << "." << int(compiled.minor) << "." << int(compiled.patch) << std::endl;
+    std::cout << "SDL linked version   | " << int(linked.major) << "." << int(linked.minor) << "." << int(linked.patch) << std::endl;
 
-    // FIXME cuda version
-    // FIXME opengl version
-    // FIXME GLEW version
-    // FIXME GLM version
-#else
-    std::cout << "Release build" << std::endl;
+    int v;
+    cudaRuntimeGetVersion(&v);
+    int major = v / 1000;
+    int minor = (v - 1000*major) / 10;
+    std::cout << "CUDA runtime version | " << major << "." << minor << std::endl;
+    cudaRuntimeGetVersion(&v);
+    major = v / 1000;
+    minor = (v - 1000*major) / 10;
+    std::cout << "CUDA driver version  | " << major << "." << minor << std::endl;
+    
+    std::cout << "GLM version          | " << GLM_VERSION << std::endl;
 #endif
 
     if (!init()) {
@@ -100,9 +105,6 @@ bool App::initWindow()
     mMonitorHeight = DM.h;
 
     int startDim = std::min(mMonitorWidth, mMonitorHeight) / 2;
-#ifndef NDEBUG
-    std::cout << "starting width & height = " << startDim << std::endl;
-#endif
     mAppWindow = new AppWindow(startDim, startDim);
 
     // Create main window
@@ -151,6 +153,15 @@ bool App::initWindow()
         SDL_Quit();
         return true;
     }
+
+#ifndef NDEBUG
+    int major, minor;
+    SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &major);
+    SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &minor);
+    std::cout << "OpenGL version       | " << major << "." << minor << std::endl;
+    std::cout << "GLEW version         | " << glewGetString(GLEW_VERSION) << std::endl;
+    std::cout << "---------------------+-------" << std::endl;
+#endif
 
     return false;
 }
