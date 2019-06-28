@@ -19,7 +19,7 @@ project(smandelbrotr
     LANGUAGES   CUDA CXX
 )
 
-add_executable(smandelbrotr app.cpp  appCUDA.cpp  appGL.cpp  main.cpp  mandelbrot.cu)
+add_executable(smandelbrotr app.cpp  appCUDA.cpp  appGL.cpp  main.cpp  mandelbrot.cu mandelbrot_kernels.cu)
 
 # CUDA wants C++11
 if(NOT DEFINED CMAKE_CUDA_STANDARD)
