@@ -20,9 +20,9 @@ App::App()
     mMouseDown = false;
 
     mPrevWindowWidth = mPrevWindowHeight = -1;
+    mPrevWindowX = mPrevWindowY = -1;
 
-    mMonitorWidth = -1;
-    mMonitorHeight = -1;
+    mMonitorWidth = mMonitorHeight = -1;
 
     mMouseStartX = mMouseStartY =
         mMouseX = mMouseY = mCenterStartX = mCenterStartY = -1;
@@ -161,8 +161,11 @@ void App::loop()
     std::cout << "Running..." << std::endl;
 #endif
     bool running = true;
-    static bool skipNextF = false;
+    static Uint32 lastFrameEventTime = 0;
+    const Uint32 debounceTime = 100; // 100ms
+
     while (running) {
+        Uint32 curTime = SDL_GetTicks();
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE) {
@@ -182,21 +185,14 @@ void App::loop()
                     break;
                 case SDLK_f:
                     // getting double f events when we switch to fullscreen
-                    // but only on linux!
-                    // on switch to windowed, there is only the one f
+                    // only on desktop linux!  So, let's slow this down to 
+                    // "debounce" those switches
 #ifndef NDEBUG
-                    std::cout << "f" << skipNextF << std::endl;
+                    std::cout << "f " << curTime << " " << lastFrameEventTime + debounceTime << std::endl;
 #endif
-                    if (!skipNextF) {
+                    if(curTime > lastFrameEventTime + debounceTime) {
                         mSwitchFullscreen = true;
-#ifndef WIN32
-                        skipNextF = !mIsFullscreen; // linux only
-#else
-                        skipNextF = false; // win32 only
-#endif
-                    }
-                    else {
-                        skipNextF = false;
+                        lastFrameEventTime = curTime;
                     }
                     break;
                 case SDLK_RETURN:
@@ -298,7 +294,9 @@ void App::update()
 #endif
             mIsFullscreen = false;
             SDL_SetWindowFullscreen(mSDLWindow, 0);
+            SDL_RestoreWindow(mSDLWindow);  // Seemingly required for Jetson
             SDL_SetWindowSize(mSDLWindow, mPrevWindowWidth, mPrevWindowHeight);
+            SDL_SetWindowPosition(mSDLWindow, mPrevWindowX, mPrevWindowY);
         }
         else { // switch to fullscreen
 #ifndef NDEBUG
@@ -307,6 +305,7 @@ void App::update()
             mIsFullscreen = true;
             mPrevWindowWidth = mAppWindow->width();
             mPrevWindowHeight = mAppWindow->height();
+            SDL_GetWindowPosition(mSDLWindow, &mPrevWindowX, &mPrevWindowY);
             SDL_SetWindowSize(mSDLWindow, mMonitorWidth, mMonitorHeight);
             SDL_SetWindowFullscreen(mSDLWindow, SDL_WINDOW_FULLSCREEN_DESKTOP); // "fake" fullscreen
         }

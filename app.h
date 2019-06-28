@@ -28,6 +28,7 @@ class App {
     bool mIsFullscreen;
     int mMonitorWidth, mMonitorHeight;
     int mPrevWindowWidth, mPrevWindowHeight;
+    int mPrevWindowX, mPrevWindowY;
     bool mZoomOutMode;
     bool mSaveImage;
     bool mMouseDown;
