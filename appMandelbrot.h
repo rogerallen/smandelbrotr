@@ -1,10 +1,10 @@
 #ifndef SMANDELBROTR_APP_MANDELBROT_H
 #define SMANDELBROTR_APP_MANDELBROT_H
 
+#include "appCUDAProgram.h"
 #include "mandelbrot.h"
 
 class AppMandelbrot {
-    const static bool USE_REAL_TIME_COMPILE = false;
     AppWindow *mWindow;
     AppGL *mAppGL;
     // controls for the renderer
@@ -13,9 +13,7 @@ class AppMandelbrot {
     bool mDoublePrecision;
 
   public:
-    AppMandelbrot(AppWindow *window, /*AppPbo *sharedPbo,*/ AppGL *appGL) : mWindow(window),
-                                                                            //mSharedPbo(sharedPbo),
-                                                                            mAppGL(appGL)
+    AppMandelbrot(AppWindow *window, AppGL *appGL) : mWindow(window), mAppGL(appGL)
     {
         mCenterX = -0.5;
         mCenterY = 0.0;
@@ -23,11 +21,12 @@ class AppMandelbrot {
         mIterMult = 1;
         mDoublePrecision = false;
     }
+
     void init()
     {
         mAppGL->sharedPbo()->registerBuffer();
-        // FIXME real-time compile stuff here
     }
+
     void render()
     {
         // Run CUDA kernel to write to the PBO
@@ -41,21 +40,9 @@ class AppMandelbrot {
     }
     void doublePrecision(bool b) { mDoublePrecision = b; }
     void iterMult(int i) { mIterMult = i; }
-    void centerX(double d)
-    {
-        //#ifdef DEBUG
-        //        std::cerr << "centerX = " << d;
-        //#endif
-        mCenterX = d;
-    }
+    void centerX(double d) { mCenterX = d; }
     double centerX() { return mCenterX; }
-    void centerY(double d)
-    {
-        //#ifdef DEBUG
-        //        std::cerr << " centerY = " << d  << std::endl;
-        //#endif
-        mCenterY = d;
-    }
+    void centerY(double d) { mCenterY = d; }
     double centerY() { return mCenterY; }
     double zoom() { return mZoom; }
     void zoomMul(double d) { mZoom *= d; }

@@ -5,6 +5,7 @@
 
 #include <cuda.h>
 #include <cuda_runtime_api.h>
+#include <nvrtc.h>
 
 #include <stdio.h>
 
@@ -30,6 +31,19 @@ inline void cuAssert(CUresult code, const char *file, int line, bool abort = tru
         const char *errStr;
         cuGetErrorString(code, &errStr);
         fprintf(stderr, "CU assert: %s %s:%d\n", errStr, file, line);
+        if (abort)
+            exit(code);
+    }
+}
+
+#define nvrtcErrChk(ans)                        \
+    {                                        \
+        nvrtcAssert((ans), __FILE__, __LINE__); \
+    }
+inline void nvrtcAssert(nvrtcResult code, const char *file, int line, bool abort = true)
+{
+    if (code != NVRTC_SUCCESS) {
+        fprintf(stderr, "nvrtc assert: %s %s:%d\n", nvrtcGetErrorString(code), file, line);
         if (abort)
             exit(code);
     }

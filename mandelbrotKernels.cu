@@ -1,5 +1,5 @@
 // mandelbrot cuda kernels
-#include "mandelbrot_kernels.h"
+#include "mandelbrotKernels.h"
 
 // viridis color map buffer
 __device__ static unsigned char viridis[256][3] = {
@@ -48,6 +48,7 @@ __device__ static unsigned char viridis[256][3] = {
     { 31,230,247}, { 33,231,249}, { 35,231,251}, { 36,231,254}
 };
 
+extern "C" // no name mangling
 __global__ void mandel_float(uchar4 *ptr, int max_w, int max_h, int w, int h, float cx, float cy, float zoom, int iter_mult)
 {
     int x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -92,6 +93,7 @@ __global__ void mandel_float(uchar4 *ptr, int max_w, int max_h, int w, int h, fl
     }
 }
 
+extern "C" // no name mangling
 __global__ void mandel_double(uchar4 *ptr, int max_w, int max_h, int w, int h, double cx, double cy, double zoom, int iter_mult)
 {
     int x = threadIdx.x + blockIdx.x * blockDim.x;

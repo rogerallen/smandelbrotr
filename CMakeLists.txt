@@ -19,7 +19,8 @@ project(smandelbrotr
     LANGUAGES   CUDA CXX
 )
 
-add_executable(smandelbrotr app.cpp  appCUDA.cpp  appGL.cpp  main.cpp  mandelbrot.cu mandelbrot_kernels.cu)
+add_executable(smandelbrotr app.cpp  appCUDA.cpp  appGL.cpp  main.cpp  
+                            mandelbrot.cu mandelbrotKernels.cu appCUDAProgram.cu)
 
 # CUDA wants C++11
 if(NOT DEFINED CMAKE_CUDA_STANDARD)
@@ -27,7 +28,7 @@ if(NOT DEFINED CMAKE_CUDA_STANDARD)
     set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 endif()
 # (don't know why I needed to add this explicitly)
-target_link_libraries(smandelbrotr cuda)
+target_link_libraries(smandelbrotr cuda nvrtc)
 
 set_target_properties(smandelbrotr PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 target_compile_features(smandelbrotr PUBLIC cxx_std_11)
