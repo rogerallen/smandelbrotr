@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-const static bool USE_REAL_TIME_COMPILE = false;
+const static bool USE_REAL_TIME_COMPILE = true;
 
 static AppCUDAProgram *gAppCUDAProgram  = nullptr;
 static CUfunction gMandelFloatFn        = nullptr;
@@ -25,13 +25,17 @@ void mandelbrot(void *devPtr,
     if(USE_REAL_TIME_COMPILE) {
         if(gAppCUDAProgram == nullptr) {
             gAppCUDAProgram = new AppCUDAProgram();
-            gAppCUDAProgram->init("../mandelbrotKernels.cu");
+#if 1
+            gAppCUDAProgram->init("../../mandelbrotKernels.cu"); // FIXME -- WINDOWS
+#else
+            gAppCUDAProgram->init("../mandelbrotKernels.cu"); // FIXME -- LINUX
+#endif
             gMandelFloatFn = gAppCUDAProgram->function("mandel_float");
             gMandelDoubleFn = gAppCUDAProgram->function("mandel_double");
         }
         if(doublePrecision) {
             void *args[] = {
-                devPtr, 
+                reinterpret_cast<void *>(&devPtr),
                 reinterpret_cast<void *>(&winWidth), 
                 reinterpret_cast<void *>(&winHeight),
                 reinterpret_cast<void *>(&mandelWidth),
@@ -53,7 +57,7 @@ void mandelbrot(void *devPtr,
             float fCenterY = (float)centerY;
             float fZoom = (float)zoom;
             void *args[] = {
-                devPtr, 
+                reinterpret_cast<void *>(&devPtr),
                 reinterpret_cast<void *>(&winWidth), 
                 reinterpret_cast<void *>(&winHeight),
                 reinterpret_cast<void *>(&mandelWidth),
