@@ -3,6 +3,7 @@
 
 #include "appCUDAProgram.h"
 #include "mandelbrot.h"
+#include <string>
 
 class AppMandelbrot {
     AppWindow *mWindow;
@@ -11,15 +12,22 @@ class AppMandelbrot {
     double mCenterX, mCenterY, mZoom;
     int mIterMult;
     bool mDoublePrecision;
+    std::string kernelFilePath;
 
   public:
-    AppMandelbrot(AppWindow *window, AppGL *appGL) : mWindow(window), mAppGL(appGL)
+    AppMandelbrot(AppWindow *window, AppGL *appGL, const std::string &shaderPath) : mWindow(window), mAppGL(appGL)
     {
         mCenterX = -0.5;
         mCenterY = 0.0;
         mZoom = 0.5;
         mIterMult = 1;
         mDoublePrecision = false;
+#ifdef WIN32
+        const std::string pathSep = "\\";
+#else
+        const std::string pathSep = "/";
+#endif
+        kernelFilePath = shaderPath + pathSep + "mandelbrotKernels.cu";
     }
 
     void init()
@@ -35,7 +43,8 @@ class AppMandelbrot {
                    mWindow->width(), mWindow->height(),
                    mAppGL->textureWidth(), mAppGL->textureHeight(),
                    mCenterX, mCenterY,
-                   mZoom, mIterMult, mDoublePrecision);
+                   mZoom, mIterMult, mDoublePrecision,
+                   kernelFilePath);
         mAppGL->sharedPbo()->unmapGraphicsResource();
     }
     void doublePrecision(bool b) { mDoublePrecision = b; }

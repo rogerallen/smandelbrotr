@@ -57,7 +57,7 @@ class AppGL {
     //     0     1 x position coords
     //     0     1 s texture coords
     //
-    AppGL(AppWindow *appWindow, unsigned maxWidth, unsigned maxHeight)
+    AppGL(AppWindow *appWindow, unsigned maxWidth, unsigned maxHeight, const std::string &shaderPath)
     {
 #ifndef NDEBUG
         std::cout << "maxWidth,height = " << maxWidth << "," << maxHeight << std::endl;
@@ -68,21 +68,17 @@ class AppGL {
         mSharedPbo = new AppPbo(maxWidth, maxHeight);
         mSharedTex = new AppTexture(maxWidth, maxHeight);
         mPixels = nullptr;
-        // FIXME -- the path to the shaders is fixed at compiletime & used at runtime.  This is too fragile.
-        // find absolute paths.
-        std::string file_path = __FILE__;
 #ifdef WIN32
-        const std::string path_sep = "\\";
+        const std::string pathSep = "\\";
 #else
-        const std::string path_sep = "/";
+        const std::string pathSep = "/";
 #endif
-        std::string file_dir = file_path.substr(0, file_path.rfind(path_sep));
 #ifndef NDEBUG
-        std::cout << "source directory = " << file_dir << std::endl;
+        std::cout << "source directory = " << shaderPath << std::endl;
 #endif
         mBasicProg = new AppGLProgram(
-            file_dir + path_sep + "basic_vert.glsl",
-            file_dir + path_sep + "basic_frag.glsl");
+            shaderPath + pathSep + "basic_vert.glsl",
+            shaderPath + pathSep + "basic_frag.glsl");
         float coords[] = {0.0f, 1.0f, // 8 attrs, 4 verts
                           1.0f, 1.0f,
                           0.0f, 0.0f,
@@ -93,6 +89,12 @@ class AppGL {
         // During init, enable debug output
         glEnable(GL_DEBUG_OUTPUT);
         glDebugMessageCallback(MessageCallback, 0);
+    }
+    ~AppGL()
+    {
+        if (mPixels != nullptr) {
+            delete[](mPixels);
+        }
     }
     AppPbo *sharedPbo()
     {
@@ -125,7 +127,7 @@ class AppGL {
             float newCoords[] = {0.0f, hratio, wratio, hratio, 0.0f, 0.0f, wratio, 0.0f};
             mVerts->updateTexCoords(newCoords);
         }
-        // resize rgb array for saving pixels (FIXME? add to destructor)
+        // resize rgb array for saving pixels
         if (mPixels != nullptr) {
             delete[](mPixels);
         }

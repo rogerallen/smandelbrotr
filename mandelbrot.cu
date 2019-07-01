@@ -5,6 +5,7 @@
 
 #include <iostream>
 
+// CONFIGURATION SWITCH -- realtime compile or standard CUDA compiled path?
 const static bool USE_REAL_TIME_COMPILE = true;
 
 static AppCUDAProgram *gAppCUDAProgram  = nullptr;
@@ -15,7 +16,8 @@ void mandelbrot(void *devPtr,
                 unsigned winWidth, unsigned winHeight,
                 unsigned texWidth, unsigned texHeight,
                 double centerX, double centerY,
-                double zoom, int iterMult, bool doublePrecision) 
+                double zoom, int iterMult, bool doublePrecision,
+                const std::string &kernelFilePath) 
 {
     const int blockSize = 16; // 256 threads per block
     unsigned mandelWidth = min(winWidth, texWidth);
@@ -24,12 +26,11 @@ void mandelbrot(void *devPtr,
     dim3 blockDim(blockSize, blockSize);
     if(USE_REAL_TIME_COMPILE) {
         if(gAppCUDAProgram == nullptr) {
-            gAppCUDAProgram = new AppCUDAProgram();
-#if 1
-            gAppCUDAProgram->init("../../mandelbrotKernels.cu"); // FIXME -- WINDOWS
-#else
-            gAppCUDAProgram->init("../mandelbrotKernels.cu"); // FIXME -- LINUX
+#ifndef NDEBUG
+            std::cout << "Using realtime compiled kernel: " << kernelFilePath << std::endl;
 #endif
+            gAppCUDAProgram = new AppCUDAProgram();
+            gAppCUDAProgram->init(kernelFilePath);
             gMandelFloatFn = gAppCUDAProgram->function("mandel_float");
             gMandelDoubleFn = gAppCUDAProgram->function("mandel_double");
         }

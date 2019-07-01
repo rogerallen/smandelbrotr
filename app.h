@@ -9,10 +9,11 @@
 #include <SDL.h>
 #include <algorithm>
 #include <iostream>
+#include <string>
 
 class App {
 
-    bool init();
+    bool init(const int cudaDevice, const std::string &shaderPath);
     bool initWindow();
     void loop();
     void update();
@@ -38,6 +39,6 @@ class App {
 
   public:
     App();
-    void run();
+    void run(const int cudaDevice, const std::string &shaderPath);
 };
 #endif

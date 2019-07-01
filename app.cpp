@@ -1,7 +1,7 @@
 #include "app.h"
 
 #ifdef WIN32
-// don't interfere with std::min,max 
+// don't interfere with std::min,max
 #define NOMINMAX
 // https://seabird.handmade.network/blogs/p/2460-be_aware_of_high_dpi
 #pragma comment(lib, "Shcore.lib")
@@ -13,6 +13,11 @@
 
 App::App()
 {
+    mAppWindow = nullptr;
+    mAppGL = nullptr;
+    mAppMandelbrot = nullptr;
+    mSDLWindow = nullptr;
+
     mSwitchFullscreen = false;
     mIsFullscreen = false;
     mZoomOutMode = false;
@@ -28,7 +33,7 @@ App::App()
         mMouseX = mMouseY = mCenterStartX = mCenterStartY = -1;
 }
 
-void App::run()
+void App::run(const int cudaDevice, const std::string &shaderPath)
 {
 #ifndef NDEBUG
     std::cout << "SDL2 CUDA OpenGL Mandelbrotr" << std::endl;
@@ -44,17 +49,17 @@ void App::run()
     int v;
     cudaRuntimeGetVersion(&v);
     int major = v / 1000;
-    int minor = (v - 1000*major) / 10;
+    int minor = (v - 1000 * major) / 10;
     std::cout << "CUDA runtime version | " << major << "." << minor << std::endl;
     cudaRuntimeGetVersion(&v);
     major = v / 1000;
-    minor = (v - 1000*major) / 10;
+    minor = (v - 1000 * major) / 10;
     std::cout << "CUDA driver version  | " << major << "." << minor << std::endl;
-    
+
     std::cout << "GLM version          | " << GLM_VERSION << std::endl;
 #endif
 
-    if (!init()) {
+    if (!init(cudaDevice, shaderPath)) {
         loop();
     }
     cleanup();
@@ -65,22 +70,21 @@ void App::cleanup()
 #ifndef NDEBUG
     std::cout << "Exiting..." << std::endl;
 #endif
-    mAppMandelbrot->render();
-    mAppGL->render();
+    SDL_DestroyWindow(mSDLWindow);
 }
 
 // initialize SMFL, OpenGL, CUDA & Mandelbrot classes
 // return true on error
-bool App::init()
+bool App::init(const int cudaDevice, const std::string &shaderPath)
 {
     if (initWindow()) {
         return true;
     }
-    mAppGL = new AppGL(mAppWindow, mMonitorWidth, mMonitorHeight);
-    if (AppCUDA::setDevice()) {
+    mAppGL = new AppGL(mAppWindow, mMonitorWidth, mMonitorHeight, shaderPath);
+    if (AppCUDA::setDevice(cudaDevice)) {
         return true;
     }
-    mAppMandelbrot = new AppMandelbrot(mAppWindow, mAppGL);
+    mAppMandelbrot = new AppMandelbrot(mAppWindow, mAppGL, shaderPath);
     mAppMandelbrot->init();
     return false;
 }
@@ -196,12 +200,9 @@ void App::loop()
                     break;
                 case SDLK_f:
                     // getting double f events when we switch to fullscreen
-                    // only on desktop linux!  So, let's slow this down to 
+                    // only on desktop linux!  So, let's slow this down to
                     // "debounce" those switches
-#ifndef NDEBUG
-                    std::cout << "f " << curTime << " " << lastFrameEventTime + debounceTime << std::endl;
-#endif
-                    if(curTime > lastFrameEventTime + debounceTime) {
+                    if (curTime > lastFrameEventTime + debounceTime) {
                         mSwitchFullscreen = true;
                         lastFrameEventTime = curTime;
                     }
@@ -225,7 +226,7 @@ void App::loop()
                     std::cout << "Center = " << mAppMandelbrot->centerX() << ", " << mAppMandelbrot->centerY() << std::endl;
                     std::cout << "Zoom =   " << mAppMandelbrot->zoom() << std::endl;
                     break;
-                case SDLK_w: // FIXME
+                case SDLK_w:
                     mSaveImage = true;
                     break;
                 }
@@ -305,7 +306,7 @@ void App::update()
 #endif
             mIsFullscreen = false;
             SDL_SetWindowFullscreen(mSDLWindow, 0);
-            SDL_RestoreWindow(mSDLWindow);  // Seemingly required for Jetson
+            SDL_RestoreWindow(mSDLWindow); // Seemingly required for Jetson
             SDL_SetWindowSize(mSDLWindow, mPrevWindowWidth, mPrevWindowHeight);
             SDL_SetWindowPosition(mSDLWindow, mPrevWindowX, mPrevWindowY);
         }

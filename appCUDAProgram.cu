@@ -50,7 +50,7 @@ AppCUDAProgram::AppCUDAProgram()
     mModule = new CUmodule();
 }
 
-void AppCUDAProgram::init(std::string fileName) 
+void AppCUDAProgram::init(const std::string &fileName) 
 {
     char *ptx;
     size_t ptxSize;
@@ -75,7 +75,7 @@ void AppCUDAProgram::init(std::string fileName)
 }
 
 // given the kernelName, return the CUfunction within mModule
-CUfunction AppCUDAProgram::function(std::string kernelName) {
+CUfunction AppCUDAProgram::function(const std::string &kernelName) {
     CUfunction kernelAddr;
     cuErrChk(cuModuleGetFunction(&kernelAddr, *mModule, kernelName.c_str()));
     return kernelAddr;

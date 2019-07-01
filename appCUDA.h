@@ -11,7 +11,7 @@
 #include <iostream>
 
 namespace AppCUDA {
-bool setDevice();
+bool setDevice(const int cudaDevice);
 };
 
 #endif

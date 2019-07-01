@@ -31,7 +31,7 @@ class AppGLProgram {
             exit(EXIT_FAILURE);
         }
     }
-    GLuint createShader(const std::string resource, GLuint type)
+    GLuint createShader(const std::string &resource, GLuint type)
     {
         GLuint shader = glCreateShader(type);
         std::string source = readFile(resource);
