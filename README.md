@@ -65,6 +65,15 @@ An [NVIDIA](https://www.nvidia.com/) graphics card is required.  If you have a l
 
 Making the window smaller will speed up the calculation.
 
+```
+options:
+  -d N    - select cuda device number N. (default = 0)
+  -p PATH - path to shaders & compute kernel. (default = '.')
+  -h      - this message.
+```
+
+To avoid setting commandline options, run this from the source directory like `./Release/smandelbrotr` 
+
 ### Mouse 
 
 Left click to pan.
