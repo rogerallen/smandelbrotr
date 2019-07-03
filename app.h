@@ -36,6 +36,7 @@ class App {
     double mMouseStartX, mMouseStartY;
     double mMouseX, mMouseY;
     double mCenterStartX, mCenterStartY;
+    bool mReverseZoomMode;
 
   public:
     App();

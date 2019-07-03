@@ -68,6 +68,7 @@ class AppGL {
         mSharedPbo = new AppPbo(maxWidth, maxHeight);
         mSharedTex = new AppTexture(maxWidth, maxHeight);
         mPixels = nullptr;
+        mCameraToView = glm::mat4(1.0f);
 #ifdef WIN32
         const std::string pathSep = "\\";
 #else
@@ -131,7 +132,7 @@ class AppGL {
         if (mPixels != nullptr) {
             delete[](mPixels);
         }
-        mPixels = new unsigned char[mWindow->width() * mWindow->height() * 4];
+        mPixels = new unsigned char[4ULL * mWindow->width() * mWindow->height()];
     }
     void render()
     {

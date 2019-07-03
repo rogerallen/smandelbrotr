@@ -22,7 +22,7 @@ class AppPbo {
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, mId);
         // Allocate data for the buffer. DYNAMIC (modified repeatedly)
         // DRAW (not reading from GL)
-        glBufferData(GL_PIXEL_UNPACK_BUFFER, width * height * 4, nullptr, GL_DYNAMIC_DRAW);
+        glBufferData(GL_PIXEL_UNPACK_BUFFER, 4ULL * width * height, nullptr, GL_DYNAMIC_DRAW);
     };
 
     // registers & set mCudaPbo as the same as mId PBO.

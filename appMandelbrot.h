@@ -55,7 +55,12 @@ class AppMandelbrot {
     double centerY() { return mCenterY; }
     double zoom() { return mZoom; }
     void zoomMul(double d) { mZoom *= d; }
-    void zoomDiv(double d) { mZoom /= d; }
+    void zoomDiv(double d) { 
+        mZoom /= d; 
+        if (mZoom < 0.25) {
+            mZoom = 0.25;
+        }
+    }
 };
 
 #endif

@@ -17,12 +17,14 @@ App::App()
     mAppGL = nullptr;
     mAppMandelbrot = nullptr;
     mSDLWindow = nullptr;
+    mSDLGLContext = nullptr;
 
     mSwitchFullscreen = false;
     mIsFullscreen = false;
     mZoomOutMode = false;
     mSaveImage = false;
     mMouseDown = false;
+    mReverseZoomMode = false;
 
     mPrevWindowWidth = mPrevWindowHeight = -1;
     mPrevWindowX = mPrevWindowY = -1;
@@ -229,6 +231,16 @@ void App::loop()
                 case SDLK_w:
                     mSaveImage = true;
                     break;
+                case SDLK_LSHIFT:
+                    mReverseZoomMode = true;
+                    break;
+                }
+            }
+            else if (event.type == SDL_KEYUP) {
+                switch (event.key.keysym.sym) {
+                case SDLK_LSHIFT:
+                    mReverseZoomMode = false;
+                    break;
                 }
             }
             else if (event.type == SDL_WINDOWEVENT) {
@@ -257,7 +269,10 @@ void App::loop()
             }
             else if (event.type == SDL_MOUSEWHEEL) {
                 const double zoomFactor = 1.1;
-                if (event.wheel.y > 0) {
+                // my Lenovo laptop's trackpad does not work with mousewheel--strange!
+                // Alright then, use LSHIFT key to control direction if necessary.
+                bool zoomIn = mReverseZoomMode ? event.wheel.y >= 0 : event.wheel.y < 0;
+                if (zoomIn) {
                     mAppMandelbrot->zoomMul(zoomFactor);
                 }
                 else {
