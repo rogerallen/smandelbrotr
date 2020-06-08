@@ -1,14 +1,15 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.14)
 
-# On Windows, these variables need to be customized for your environment.
-# On Linux you can apt-get install these to system locations
 if(WIN32)
-    set(SDL2_DIR          "/Users/rallen/Documents/Devel/SDL2-2.0.9")
-    set(GLEW_INCLUDE_DIR  "/Users/rallen/Documents/Devel/glew-2.1.0/include")
-    set(GLEW_LIBRARY      "/Users/rallen/Documents/Devel/glew-2.1.0/lib/Release/x64/glew32.lib")
-    set(GLEW_DLL_DIR      "/Users/rallen/Documents/Devel/glew-2.1.0/bin/Release/x64")
-    set(GLM_DIR           "/Users/rallen/Documents/Devel/glm-0.9.9.5")
+    # On Linux you can apt-get install these to system locations
+    set(SDL2_DIR  ${CMAKE_SOURCE_DIR}/external/SDL2-2.0.12)
+    set(GLEW_ROOT ${CMAKE_SOURCE_DIR}/external/glew-2.1.0)
 endif()
+set(GLM_DIR    ${CMAKE_SOURCE_DIR}/external/glm-0.9.9.8)
+set(IMGUI_ROOT ${CMAKE_SOURCE_DIR}/external/imgui-1.76)
+
+# SDL2, glew, glm, ImGui
+add_subdirectory("external")
 
 include(CheckLanguage)
 check_language(CUDA)
@@ -19,9 +20,17 @@ project(smandelbrotr
     LANGUAGES   CUDA CXX
 )
 
-add_executable(smandelbrotr src/app.cpp src/appCUDA.cpp src/appGL.cpp src/main.cpp  
-                            src/mandelbrot.cu src/mandelbrotKernels.cu src/appCUDAProgram.cu)
+# IMGUI
+set(IMGUI_SOURCES ${IMGUI_ROOT}/imgui.cpp ${IMGUI_ROOT}/imgui_draw.cpp ${IMGUI_ROOT}/imgui_widgets.cpp)
+set(IMGUI_IMPL_SOURCES ${IMGUI_ROOT}/examples/imgui_impl_sdl.cpp ${IMGUI_ROOT}/examples/imgui_impl_opengl3.cpp)
 
+add_executable(smandelbrotr src/app.cpp src/appCUDA.cpp src/appGL.cpp src/main.cpp  
+                            src/mandelbrot.cu src/mandelbrotKernels.cu src/appCUDAProgram.cu
+                            ${IMGUI_SOURCES} ${IMGUI_IMPL_SOURCES})
+
+target_include_directories(smandelbrotr PUBLIC "${IMGUI_ROOT}")
+target_include_directories(smandelbrotr PUBLIC "${IMGUI_ROOT}/examples")
+                            
 # CUDA wants C++11
 if(NOT DEFINED CMAKE_CUDA_STANDARD)
     set(CMAKE_CUDA_STANDARD 11)

@@ -12,38 +12,15 @@ Requires [Cmake](https://cmake.org/), [SDL2](https://www.libsdl.org/), [GLEW](ht
 
 Tested to work with Visual Studio 2017 both Community & Enterprise editions with the CMake extras installed.
 
-Much of this is derived from https://trenki2.github.io/blog/2017/06/02/using-sdl2-with-cmake/  (Thanks!)
+Originally derived from https://trenki2.github.io/blog/2017/06/02/using-sdl2-with-cmake/  (Thanks!)
 
-* download SDL2 dev libraries from https://www.libsdl.org/download-2.0.php, unzip and put folder within somewhere accessible.
-* set var SDL2_DIR in CMakeLists.txt (or your environment) to that directory
-* add sdl2-config.cmake to SDL2_DIR containing
-```
-set(SDL2_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/include")
-
-# Support both 32 and 64 bit builds
-if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
-  set(SDL2_LIBRARIES "${CMAKE_CURRENT_LIST_DIR}/lib/x64/SDL2.lib;${CMAKE_CURRENT_LIST_DIR}/lib/x64/SDL2main.lib")
-else ()
-  set(SDL2_LIBRARIES "${CMAKE_CURRENT_LIST_DIR}/lib/x86/SDL2.lib;${CMAKE_CURRENT_LIST_DIR}/lib/x86/SDL2main.lib")
-endif ()
-
-string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
-```
-
-* download GLEW dev libraries from http://glew.sourceforge.net/, unzip and put folder within somewhere accessible
-* see CmakeLists.txt for how to set GLEW_INCLUDE_DIR, GLEW_LIBRARY and GLEW_DLL_DIR
-
-* download GLM dev dir from https://glm.g-truc.net/ (click downloads & grab a recent zip file)
-  unzip and put folder within somewhere accessible.
-* set var GLM_DIR in CMakeLists.txt (or your environment) to that directory
-
-* then CMake build & Project build and you should be good.
+Cmake now downloads SDL2, GLEW, GLM and IMGUI, so Visual Studio CMake build & Project build and you should be good.
 
 ### Linux
 
 You'll need a more recent version of cmake than Ubuntu 16.04 comes with.  Google for how to install that.
 
-`sudo apt-get install cmake libsdl2-dev libglew-dev libglm-dev`
+`sudo apt-get install cmake libsdl2-dev libglew-dev`
 then
 ```
 mkdir Debug
