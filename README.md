@@ -1,12 +1,12 @@
 # SMandelbrotr
 
-A [Mandelbrot set](https://en.wikipedia.org/wiki/Mandelbrot_set) pan/zoom application powered via [SDL2](https://www.libsdl.org/), [CUDA](https://developer.nvidia.com/cuda-zone) and [OpenGL](https://www.opengl.org/) (via [GLEW](http://glew.sourceforge.net/) and [GLM](https://glm.g-truc.net/)).  
+A [Mandelbrot set](https://en.wikipedia.org/wiki/Mandelbrot_set) pan/zoom application powered via [SDL2](https://www.libsdl.org/), [CUDA](https://developer.nvidia.com/cuda-zone), [OpenGL](https://www.opengl.org/) (via [GLEW](http://glew.sourceforge.net/) and [GLM](https://glm.g-truc.net/)) and [ImGUI](https://github.com/ocornut/imgui).  
 
 ![Screenshot](screenshot1.jpg)
 
 ## Building
 
-Requires [Cmake](https://cmake.org/), [SDL2](https://www.libsdl.org/), [GLEW](http://glew.sourceforge.net/) and [GLM](https://glm.g-truc.net/).  
+Requires [Cmake](https://cmake.org/) 
 
 ### Windows
 
@@ -40,7 +40,7 @@ make
 
 An [NVIDIA](https://www.nvidia.com/) graphics card is required.  If you have a laptop with hybrid graphics, use the NVIDIA Control Panel's Manage 3D Settings panel and Program Settings tab to make Java choose the "High-performance NVIDIA processor".
 
-Making the window smaller will speed up the calculation.
+Making the window smaller will speed up the calculations.
 
 ```
 options:
@@ -59,6 +59,7 @@ Middle scroll wheel to zoom.
 ### Key Bindings
 
 * __ESC__: quit
+* __TAB__: show/hide information window
 * __d/s__: (d)ouble or (s)ingle floating point precision math.  Single is default.  It is faster & less precise.
 * __f__: switch to/from (f)ullscreen.
 * __enter__: begin zoom out mode.  animates un-zooming.

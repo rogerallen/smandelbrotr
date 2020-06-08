@@ -48,15 +48,17 @@ class AppMandelbrot {
         mAppGL->sharedPbo()->unmapGraphicsResource();
     }
     void doublePrecision(bool b) { mDoublePrecision = b; }
+    bool doublePrecision() { return mDoublePrecision; }
     void iterMult(int i) { mIterMult = i; }
+    int iterMult() { return mIterMult; }
     void centerX(double d) { mCenterX = d; }
     double centerX() { return mCenterX; }
     void centerY(double d) { mCenterY = d; }
     double centerY() { return mCenterY; }
     double zoom() { return mZoom; }
     void zoomMul(double d) { mZoom *= d; }
-    void zoomDiv(double d) { 
-        mZoom /= d; 
+    void zoomDiv(double d) {
+        mZoom /= d;
         if (mZoom < 0.25) {
             mZoom = 0.25;
         }

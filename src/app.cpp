@@ -1,5 +1,9 @@
 #include "app.h"
 
+#include "imgui.h"
+#include "examples/imgui_impl_sdl.h"
+#include "examples/imgui_impl_opengl3.h"
+
 #ifdef WIN32
 // don't interfere with std::min,max
 #define NOMINMAX
@@ -25,6 +29,7 @@ App::App()
     mSaveImage = false;
     mMouseDown = false;
     mReverseZoomMode = false;
+    mShowGUI = false;
 
     mPrevWindowWidth = mPrevWindowHeight = -1;
     mPrevWindowX = mPrevWindowY = -1;
@@ -72,6 +77,11 @@ void App::cleanup()
 #ifndef NDEBUG
     std::cout << "Exiting..." << std::endl;
 #endif
+
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
+
     SDL_DestroyWindow(mSDLWindow);
 }
 
@@ -160,6 +170,21 @@ bool App::initWindow()
         return true;
     }
 
+    // initialize imgui
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+
+    // setup Dear ImGui style
+    ImGui::StyleColorsDark();
+
+    // setup platform/renderer bindings
+    ImGui_ImplSDL2_InitForOpenGL(mSDLWindow, mSDLGLContext);
+    ImGui_ImplOpenGL3_Init("#version 330");
+
+    // colors are set in RGBA, but as float
+    //ImVec4 background = ImVec4(35/255.0f, 35/255.0f, 35/255.0f, 1.00f);
+
+
 #ifndef NDEBUG
     int major, minor;
     SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &major);
@@ -185,6 +210,13 @@ void App::loop()
         Uint32 curTime = SDL_GetTicks();
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
+
+            ImGui_ImplSDL2_ProcessEvent(&event);
+            ImGuiIO& io = ImGui::GetIO();
+            if (io.WantCaptureKeyboard || io.WantCaptureMouse) {
+                break;
+            }
+
             if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE) {
                 running = false;
                 break;
@@ -194,6 +226,8 @@ void App::loop()
                 case SDLK_ESCAPE:
                     running = false;
                     break;
+                case SDLK_TAB:
+                    mShowGUI = !mShowGUI;
                 case SDLK_d:
                     mAppMandelbrot->doublePrecision(true);
                     break;
@@ -280,9 +314,27 @@ void App::loop()
                 }
             }
         }
+
         update();
         mAppMandelbrot->render();
         mAppGL->render();
+
+        {
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplSDL2_NewFrame(mSDLWindow);
+            ImGui::NewFrame();
+            if(mShowGUI) {
+                ImGui::Begin("Information", NULL, ImGuiWindowFlags_AlwaysAutoResize);
+                ImGui::Text("Center     : %18.15f, %18.15f",mAppMandelbrot->centerX(), mAppMandelbrot->centerY());
+                ImGui::Text("Zoom       : %10.8f",mAppMandelbrot->zoom());
+                ImGui::Text("DoublePrec : %s", mAppMandelbrot->doublePrecision() ? "True" : "False");
+                ImGui::Text("Iterations : %d", mAppMandelbrot->iterMult());
+                ImGui::End();
+            }
+            ImGui::Render();
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        }
+
         SDL_GL_SwapWindow(mSDLWindow);
     }
 }
