@@ -16,7 +16,7 @@ void usage()
 
 int main(int argc, char *argv[])
 {
-    std::string shaderPath = ".";
+    std::string shaderPath = "./src";
     int cudaDevice = 0;
 
     for (int i = 1; i < argc; ++i) {
