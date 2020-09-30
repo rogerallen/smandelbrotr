@@ -329,6 +329,7 @@ void App::loop()
                 ImGui::Text("Zoom       : %10.8f",mAppMandelbrot->zoom());
                 ImGui::Text("DoublePrec : %s", mAppMandelbrot->doublePrecision() ? "True" : "False");
                 ImGui::Text("Iterations : %d", mAppMandelbrot->iterMult());
+                ImGui::Text("Framerate  : %.1f ms or %.1f Hz", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
                 ImGui::End();
             }
             ImGui::Render();
